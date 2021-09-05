@@ -1,3 +1,11 @@
+if (WEBGL.isWebGLAvailable()) {
+	// Initiate function or other initializations here
+	animate();
+} else {
+	const warning = WEBGL.getWebGLErrorMessage();
+	document.getElementById("container").appendChild(warning);
+}
+
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
 	75,
