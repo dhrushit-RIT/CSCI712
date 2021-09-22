@@ -14,3 +14,29 @@ var loadTextResource = function (url) {
 		request.send();
 	});
 };
+
+var parseKFString = function (kfString) {
+	let kfArray = [];
+
+	for (let kfstr of kfstring.split("\n")) {
+		let WHITE_SPACE_RE = /[ ,]+/;
+		let [t, x, y, z, xa, ya, za, theeta] = kfstr.split(WHITE_SPACE_RE);
+		let kf = new Keyframe(
+			parseFloat(t),
+			parseFloat(x),
+			parseFloat(y),
+			parseFloat(z),
+			parseFloat(xa),
+			parseFloat(ya),
+			parseFloat(za),
+			parseFloat(theeta)
+		);
+		kfArray.push(kf);
+	}
+
+	return kfArray;
+};
+
+// module.exports = {
+// 	loadTextResource
+// }
