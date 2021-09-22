@@ -12,6 +12,9 @@ document.body.appendChild(renderer.domElement);
 //
 const geometry = new THREE.BoxGeometry(10, 10, 10);
 console.log(geometry);
+// for (var i = 0; i < geometry.faces.length; i++) {
+// 	geometry.faces[i].color.setHex(Math.random() * 0xffffff);
+// }
 const material = new THREE.MeshBasicMaterial({
 	vertexColors: true,
 });
