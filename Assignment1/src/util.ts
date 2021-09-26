@@ -29,7 +29,8 @@ var parseKFString = function (kfString: string): MyKeyframe[] {
 			parseFloat(xa),
 			parseFloat(ya),
 			parseFloat(za),
-			parseFloat(theeta)
+			parseFloat(theeta),
+			null
 		);
 		kfArray.push(kf);
 	}

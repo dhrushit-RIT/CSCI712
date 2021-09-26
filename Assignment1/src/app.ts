@@ -24,6 +24,7 @@ const material = new THREE.MeshBasicMaterial({
 const positionAttribute = geometry.getAttribute("position");
 
 const colors = [];
+const materials: THREE.MeshBasicMaterial[] = [];
 const color = new THREE.Color();
 console.log(positionAttribute);
 
@@ -42,7 +43,7 @@ for (let i = 0; i < positionAttribute.count; i += 6) {
 
 geometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
 
-const cube = new THREE.Mesh(geometry, material);
+const cube = new THREE.Mesh(geometry, materials);
 camera.position.set(0, 0, -100);
 scene.add(cube);
 camera.lookAt(cube.position);
@@ -57,17 +58,18 @@ cube.position.z = 0;
 //
 // fetch the key frame file
 //
-let keyFrameString =
-	"0.0  0.0 0.0 0.0 1.0 1.0 -1.0 0.0\n\
-1.0  4.0 0.0 0.0 1.0 1.0 -1.0 30.0\n\
-2.0  8.0 0.0 0.0 1.0 1.0 -1.0 90.0\n\
-3.0  12.0 12.0 12.0 1.0 1.0 -1.0 180.0\n\
-4.0  12.0 18.0 18.0 1.0 1.0 -1.0 270.0\n\
-5.0  18.0 18.0 18.0 0.0 1.0 0.0 90.0\n\
-6.0  18.0 18.0 18.0 0.0 0.0 1.0 90.0\n\
-7.0  25.0 12.0 12.0 1.0 0.0 0.0 0.0\n\
-8.0  25.0 0.0 18.0 1.0 0.0 0.0 0.0\n\
-9.0  25.0 1.0 18.0 1.0 0.0 0.0 0.0";
+let keyFrameString = [
+	"0.0  0.0 0.0 0.0 1.0 1.0 -1.0 0.0",
+	"1.0  4.0 0.0 0.0 1.0 1.0 -1.0 30.0",
+	// "2.0  8.0 0.0 0.0 1.0 1.0 -1.0 90.0",
+	// "3.0  12.0 12.0 12.0 1.0 1.0 -1.0 180.0",
+	// "4.0  12.0 18.0 18.0 1.0 1.0 -1.0 270.0",
+	// "5.0  18.0 18.0 18.0 0.0 1.0 0.0 90.0",
+	// "6.0  18.0 18.0 18.0 0.0 0.0 1.0 90.0",
+	// "7.0  25.0 12.0 12.0 1.0 0.0 0.0 0.0",
+	// "8.0  25.0 0.0 18.0 1.0 0.0 0.0 0.0",
+	// "9.0  25.0 1.0 18.0 1.0 0.0 0.0 0.0",
+].join("\n");
 
 let keyFrames = parseKFString(keyFrameString);
 let kfAnim = new KFAnimator(keyFrameString);
@@ -91,14 +93,9 @@ function animate() {
 	cube.position.y = currentKF.pos.y;
 	cube.position.z = currentKF.pos.z;
 
-	cube.rotation.setFromQuaternion(
-		new THREE.Quaternion(
-			currentKF.orientation.xa,
-			currentKF.orientation.ya,
-			currentKF.orientation.za,
-			currentKF.orientation.theeta
-		)
-	);
+	cube.rotation.setFromQuaternion(currentKF.quat);
+	// if (elapsedTime <= currentKF.time)
+		// console.log(elapsedTime, 2*Math.acos(currentKF.orientation.theeta), currentKF.quat);
 
 	// cube.position.z = currentKF.pos.z;
 	// console.log("elapsedTime : " + elapsedTime + " frame : " + currentKF);

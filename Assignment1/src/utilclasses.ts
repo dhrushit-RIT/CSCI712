@@ -44,8 +44,8 @@ class Orientation {
 class MyKeyframe {
 	// Attributes
 	pos: Position;
-	orientation: Orientation;
-	quat: THREE.Quaternion;
+	orientation: Orientation | null;
+	quat: THREE.Quaternion | null;
 	time: number;
 
 	constructor(
@@ -53,16 +53,21 @@ class MyKeyframe {
 		x: number,
 		y: number,
 		z: number,
-		xa: number,
-		ya: number,
-		za: number,
-		theeta: number
+		xa: number | null,
+		ya: number | null,
+		za: number | null,
+		theeta: number | null,
+		quat: THREE.Quaternion | null
 	) {
 		this.time = time;
 		this.pos = new Position(x, y, z);
-		this.orientation = new Orientation(xa, ya, za, theeta);
-		this.quat = new THREE.Quaternion();
-		this.quat.setFromAxisAngle(new THREE.Vector3(xa, ya, za), theeta);
+		if (xa != null && ya != null && za != null && theeta != null) {
+			this.orientation = new Orientation(xa, ya, za, theeta);
+			this.quat = new THREE.Quaternion();
+			this.quat.setFromAxisAngle(new THREE.Vector3(xa, ya, za), theeta);
+		} else {
+			this.quat = new THREE.Quaternion().copy(quat);
+		}
 	}
 
 	toString(): string {
@@ -88,7 +93,8 @@ class MyKeyframe {
 			parseFloat(xa),
 			parseFloat(ya),
 			parseFloat(za),
-			parseFloat(theeta)
+			parseFloat(theeta),
+			null
 		);
 	}
 }
@@ -128,7 +134,6 @@ class KFAnimator {
 	getKFAt(time: number): MyKeyframe {
 		// return this.keyframes[0];
 		if (time > this.endTime) {
-			debugger;
 			return this.keyframes[this.keyframes.length - 1];
 		}
 
@@ -149,7 +154,7 @@ class KFAnimator {
 		let timeElapsedFromCurrentKF = time - this.currentKF.time;
 		let timeDiff = this.nextKF.time - this.currentKF.time;
 		let u = timeElapsedFromCurrentKF / timeDiff;
-
+		// console.log(u);
 		//
 		// interpolate position
 		//
@@ -164,24 +169,27 @@ class KFAnimator {
 		//
 		// interpolate orientation
 		//
-		let initialOrientation = this.currentKF.orientation;
-		let finalOrientation = this.nextKF.orientation;
+		// let initialOrientation = this.currentKF.orientation;
+		// let finalOrientation = this.nextKF.orientation;
 
-		let qInitial = this.currentKF.quat;
+		let qInitial = new THREE.Quaternion().copy(this.currentKF.quat);
 
 		let qFinal = this.nextKF.quat;
-
-		let qCurrent = qInitial.slerp(qFinal, u);
+		// qInitial.slerp(qFinal, u);
+		let currentQuat = new THREE.Quaternion();
+		currentQuat.slerpQuaternions(qInitial, qFinal, u);
+		// console.log(timeElapsedFromCurrentKF, this.currentKF.orientation.theeta, currentQuat);
 
 		return new MyKeyframe(
 			time,
 			currentPosition.x,
 			currentPosition.y,
 			currentPosition.z,
-			qInitial.x,
-			qInitial.y,
-			qInitial.z,
-			qInitial.w
+			null,
+			null,
+			null,
+			null,
+			currentQuat
 		);
 	}
 }
