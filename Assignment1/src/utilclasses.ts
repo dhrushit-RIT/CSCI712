@@ -106,6 +106,8 @@ class KFAnimator {
 	private nextKF: MyKeyframe = null;
 	private keyframes: MyKeyframe[] = [];
 	private endTime: number;
+	private u: number = 0;
+	private simulate: boolean = true;
 
 	constructor(kfstring: string) {
 		this.parseKFString(kfstring);
@@ -133,23 +135,29 @@ class KFAnimator {
 
 	getKFAt(time: number): MyKeyframe {
 		// return this.keyframes[0];
-		if (time > this.endTime) {
-			return this.keyframes[this.keyframes.length - 1];
+		if (!this.simulate && time > this.endTime) {
+			// return this.keyframes[this.keyframes.length - 1];
+			return this.currentKF;
 		}
 
-		if (time > this.nextKF.time) {
+		if (this.u >= 1 || (!this.simulate && time > this.nextKF.time)) {
 			this.currentKFIndex += 1;
 			this.nextKFIndex += 1;
 			this.currentKF = this.keyframes[this.currentKFIndex];
 			this.nextKF = this.keyframes[this.nextKFIndex];
 		}
 
-		// if (this.currentKFIndex >= this.keyframes.length) {
-		// 	this.currentKFIndex = 0;
-		// 	this.nextKFIndex = 1;
+		// if (this.keyframes.length >= this.nextKFIndex) {
+		// 	this.currentKFIndex += this.keyframes.length - 1;
 		// 	this.currentKF = this.keyframes[this.currentKFIndex];
-		// 	this.nextKF = this.keyframes[this.nextKFIndex];
 		// }
+
+		if (!this.simulate && this.currentKFIndex >= this.keyframes.length) {
+			this.currentKFIndex = 0;
+			this.nextKFIndex = 1;
+			this.currentKF = this.keyframes[this.currentKFIndex];
+			this.nextKF = this.keyframes[this.nextKFIndex];
+		}
 
 		let timeElapsedFromCurrentKF = time - this.currentKF.time;
 		let timeDiff = this.nextKF.time - this.currentKF.time;
@@ -161,10 +169,12 @@ class KFAnimator {
 		let initialPosition: Position = this.currentKF.pos;
 		let finalPosition: Position = this.nextKF.pos;
 		let currentPosition: Position = new Position(
-			this.interpolateLinear(initialPosition.x, finalPosition.x, u),
-			this.interpolateLinear(initialPosition.y, finalPosition.y, u),
-			this.interpolateLinear(initialPosition.z, finalPosition.z, u)
+			this.interpolateLinear(initialPosition.x, finalPosition.x, this.u),
+			this.interpolateLinear(initialPosition.y, finalPosition.y, this.u),
+			this.interpolateLinear(initialPosition.z, finalPosition.z, this.u)
 		);
+		this.u += 0.01;
+		console.log(this.u);
 
 		//
 		// interpolate orientation
@@ -176,8 +186,10 @@ class KFAnimator {
 
 		let qFinal = this.nextKF.quat;
 		// qInitial.slerp(qFinal, u);
-		let currentQuat = new THREE.Quaternion();
-		currentQuat.slerpQuaternions(qInitial, qFinal, u);
+		let currentQuat = new THREE.Quaternion()
+			.copy(qInitial)
+			.slerp(qFinal, this.u);
+		// currentQuat.slerpQuaternions(qInitial, qFinal, this.u);
 		// console.log(timeElapsedFromCurrentKF, this.currentKF.orientation.theeta, currentQuat);
 
 		return new MyKeyframe(
