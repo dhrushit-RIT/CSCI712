@@ -1,4 +1,4 @@
-var loadTextResource = function (url) {
+var loadTextResource = function (url: URL): Promise<string> {
 	return new Promise((resolve, reject) => {
 		var request = new XMLHttpRequest();
 		request.open("GET", url + "?please-dont-cache=" + Math.random(), true);
@@ -15,13 +15,13 @@ var loadTextResource = function (url) {
 	});
 };
 
-var parseKFString = function (kfString) {
-	let kfArray = [];
+var parseKFString = function (kfString: string): MyKeyframe[] {
+	let kfArray: MyKeyframe[] = [];
 
-	for (let kfstr of kfstring.split("\n")) {
+	for (let kfstr of kfString.split("\n")) {
 		let WHITE_SPACE_RE = /[ ,]+/;
-		let [t, x, y, z, xa, ya, za, theeta] = kfstr.split(WHITE_SPACE_RE);
-		let kf = new Keyframe(
+		let [t, x, y, z, xa, ya, za, theeta] = kfstr.trim().split(WHITE_SPACE_RE);
+		let kf = new MyKeyframe(
 			parseFloat(t),
 			parseFloat(x),
 			parseFloat(y),

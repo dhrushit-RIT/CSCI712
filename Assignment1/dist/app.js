@@ -1,0 +1,66 @@
+const scene = new THREE.Scene();
+const renderer = new THREE.WebGLRenderer();
+const side = Math.min(window.innerWidth, window.innerHeight);
+let fieldOfView = 45, aspectRatio = 4 / 3, near = 0.1, far = 1000;
+const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
+renderer.setSize(side, side);
+document.body.appendChild(renderer.domElement);
+const geometry = new THREE.BoxGeometry(5, 5, 5);
+console.log(geometry);
+const material = new THREE.MeshBasicMaterial({
+    vertexColors: true,
+});
+const positionAttribute = geometry.getAttribute("position");
+const colors = [];
+const color = new THREE.Color();
+console.log(positionAttribute);
+for (let i = 0; i < positionAttribute.count; i += 6) {
+    color.set(Math.random() * 0xffffff);
+    colors.push(color.r, color.g, color.b);
+    colors.push(color.r, color.g, color.b);
+    colors.push(color.r, color.g, color.b);
+    colors.push(color.r, color.g, color.b);
+    colors.push(color.r, color.g, color.b);
+    colors.push(color.r, color.g, color.b);
+}
+geometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
+const cube = new THREE.Mesh(geometry, material);
+camera.position.set(0, 0, -100);
+scene.add(cube);
+camera.lookAt(cube.position);
+scene.add(camera);
+const clock = new THREE.Clock();
+cube.position.x = 0;
+cube.position.y = 0;
+cube.position.z = 0;
+let keyFrameString = "0.0  0.0 0.0 0.0 1.0 1.0 -1.0 0.0\n\
+1.0  4.0 0.0 0.0 1.0 1.0 -1.0 30.0\n\
+2.0  8.0 0.0 0.0 1.0 1.0 -1.0 90.0\n\
+3.0  12.0 12.0 12.0 1.0 1.0 -1.0 180.0\n\
+4.0  12.0 18.0 18.0 1.0 1.0 -1.0 270.0\n\
+5.0  18.0 18.0 18.0 0.0 1.0 0.0 90.0\n\
+6.0  18.0 18.0 18.0 0.0 0.0 1.0 90.0\n\
+7.0  25.0 12.0 12.0 1.0 0.0 0.0 0.0\n\
+8.0  25.0 0.0 18.0 1.0 0.0 0.0 0.0\n\
+9.0  25.0 1.0 18.0 1.0 0.0 0.0 0.0";
+let keyFrames = parseKFString(keyFrameString);
+let kfAnim = new KFAnimator(keyFrameString);
+console.log(keyFrameString);
+const canvas = renderer.domElement;
+renderer.setClearColor(0xd8d8d8);
+cube.position.x = 0;
+cube.position.y = 0;
+cube.position.z = 0;
+console.log(renderer.domElement.clientHeight, renderer.domElement.clientWidth);
+function animate() {
+    requestAnimationFrame(animate);
+    let elapsedTime = clock.getElapsedTime();
+    let currentKF = kfAnim.getKFAt(elapsedTime);
+    cube.position.x = currentKF.pos.x;
+    cube.position.y = currentKF.pos.y;
+    cube.position.z = currentKF.pos.z;
+    cube.rotation.setFromQuaternion(new THREE.Quaternion(currentKF.orientation.xa, currentKF.orientation.ya, currentKF.orientation.za, currentKF.orientation.theeta));
+    renderer.render(scene, camera);
+}
+animate();
+//# sourceMappingURL=app.js.map
