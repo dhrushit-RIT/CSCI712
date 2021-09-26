@@ -18,33 +18,40 @@ document.body.appendChild(renderer.domElement);
 const geometry = new THREE.BoxGeometry(5, 5, 5);
 console.log(geometry);
 const material = new THREE.MeshBasicMaterial({
-	vertexColors: true,
+	vertexColors: false,
 });
 
 const positionAttribute = geometry.getAttribute("position");
 
 const colors = [];
-const materials: THREE.MeshBasicMaterial[] = [];
-const color = new THREE.Color();
-console.log(positionAttribute);
+const materials: THREE.MeshBasicMaterial[] = [
+	new THREE.MeshBasicMaterial( { color: 0xff0000 } ),
+	new THREE.MeshBasicMaterial( { color: 0x00ff00 } ),
+	new THREE.MeshBasicMaterial( { color: 0x0000ff } ),
+	new THREE.MeshBasicMaterial( { color: 0xff00ff } ),
+	new THREE.MeshBasicMaterial( { color: 0xffff00 } ),
+	new THREE.MeshBasicMaterial( { color: 0x00ffff } ),
+];
+// const color = new THREE.Color();
+// console.log(positionAttribute);
 
-for (let i = 0; i < positionAttribute.count; i += 6) {
-	color.set(Math.random() * 0xffffff);
+// for (let i = 0; i < positionAttribute.count; i += 6) {
+// 	color.set(Math.random() * 0xffffff);
 
-	// define the same color for each vertex of a triangle
-	colors.push(color.r, color.g, color.b);
-	colors.push(color.r, color.g, color.b);
-	colors.push(color.r, color.g, color.b);
+// 	// define the same color for each vertex of a triangle
+// 	colors.push(color.r, color.g, color.b);
+// 	colors.push(color.r, color.g, color.b);
+// 	colors.push(color.r, color.g, color.b);
 
-	colors.push(color.r, color.g, color.b);
-	colors.push(color.r, color.g, color.b);
-	colors.push(color.r, color.g, color.b);
-}
+// 	colors.push(color.r, color.g, color.b);
+// 	colors.push(color.r, color.g, color.b);
+// 	colors.push(color.r, color.g, color.b);
+// }
 
-geometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
+// geometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
 
 const cube = new THREE.Mesh(geometry, materials);
-camera.position.set(0, 0, -100);
+camera.position.set(0, 0, 100);
 scene.add(cube);
 camera.lookAt(cube.position);
 scene.add(camera);
@@ -61,7 +68,7 @@ cube.position.z = 0;
 let keyFrameString = [
 	"0.0  0.0 0.0 0.0 1.0 1.0 -1.0 0.0",
 	"1.0  4.0 0.0 0.0 1.0 1.0 -1.0 30.0",
-	// "2.0  8.0 0.0 0.0 1.0 1.0 -1.0 90.0",
+	"2.0  8.0 0.0 0.0 1.0 1.0 -1.0 90.0",
 	// "3.0  12.0 12.0 12.0 1.0 1.0 -1.0 180.0",
 	// "4.0  12.0 18.0 18.0 1.0 1.0 -1.0 270.0",
 	// "5.0  18.0 18.0 18.0 0.0 1.0 0.0 90.0",
@@ -80,7 +87,7 @@ console.log(keyFrameString);
 // render
 //
 const canvas = renderer.domElement;
-renderer.setClearColor(0xd8d8d8);
+// renderer.setClearColor(0xd8d8d8);
 cube.position.x = 0; //keyFrames[0].pos.x;
 cube.position.y = 0; //keyFrames[0].pos.y;
 cube.position.z = 0; //keyFrames[0].pos.z;
