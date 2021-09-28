@@ -23,13 +23,13 @@ var parseKFString = function (kfString: string): MyKeyframe[] {
 		let [t, x, y, z, xa, ya, za, theeta] = kfstr.trim().split(WHITE_SPACE_RE);
 		let kf = new MyKeyframe(
 			parseFloat(t),
-			parseFloat(x),
-			parseFloat(y),
-			parseFloat(z),
-			parseFloat(xa),
-			parseFloat(ya),
-			parseFloat(za),
-			parseFloat(theeta),
+			new Position(parseFloat(x), parseFloat(y), parseFloat(z)),
+			new Orientation(
+				parseFloat(xa),
+				parseFloat(ya),
+				parseFloat(za),
+				parseFloat(theeta)
+			),
 			null
 		);
 		kfArray.push(kf);
@@ -42,13 +42,12 @@ var parseKFString = function (kfString: string): MyKeyframe[] {
 // 	loadTextResource
 // }
 
-
 var toRadians = function (degrees: number): number {
 	// pi = 180
 
-	return degrees * Math.PI / 180;
-}
+	return (degrees * Math.PI) / 180;
+};
 
-var toDegrees = function(radians: number){
-	return radians * 180 / Math.PI;
-}
+var toDegrees = function (radians: number) {
+	return (radians * 180) / Math.PI;
+};
