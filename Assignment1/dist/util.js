@@ -19,9 +19,15 @@ var parseKFString = function (kfString) {
     for (let kfstr of kfString.split("\n")) {
         let WHITE_SPACE_RE = /[ ,]+/;
         let [t, x, y, z, xa, ya, za, theeta] = kfstr.trim().split(WHITE_SPACE_RE);
-        let kf = new MyKeyframe(parseFloat(t), parseFloat(x), parseFloat(y), parseFloat(z), parseFloat(xa), parseFloat(ya), parseFloat(za), parseFloat(theeta));
+        let kf = new MyKeyframe(parseFloat(t), parseFloat(x), parseFloat(y), parseFloat(z), parseFloat(xa), parseFloat(ya), parseFloat(za), parseFloat(theeta), null);
         kfArray.push(kf);
     }
     return kfArray;
+};
+var toRadians = function (degrees) {
+    return degrees * Math.PI / 180;
+};
+var toDegrees = function (radians) {
+    return radians * 180 / Math.PI;
 };
 //# sourceMappingURL=util.js.map
