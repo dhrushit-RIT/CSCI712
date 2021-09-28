@@ -25,12 +25,12 @@ const positionAttribute = geometry.getAttribute("position");
 
 const colors = [];
 const materials: THREE.MeshBasicMaterial[] = [
-	new THREE.MeshBasicMaterial( { color: 0xff0000 } ),
-	new THREE.MeshBasicMaterial( { color: 0x00ff00 } ),
-	new THREE.MeshBasicMaterial( { color: 0x0000ff } ),
-	new THREE.MeshBasicMaterial( { color: 0xff00ff } ),
-	new THREE.MeshBasicMaterial( { color: 0xffff00 } ),
-	new THREE.MeshBasicMaterial( { color: 0x00ffff } ),
+	new THREE.MeshBasicMaterial({ color: 0xff0000 }),
+	new THREE.MeshBasicMaterial({ color: 0x00ff00 }),
+	new THREE.MeshBasicMaterial({ color: 0x0000ff }),
+	new THREE.MeshBasicMaterial({ color: 0xff00ff }),
+	new THREE.MeshBasicMaterial({ color: 0xffff00 }),
+	new THREE.MeshBasicMaterial({ color: 0x00ffff }),
 ];
 // const color = new THREE.Color();
 // console.log(positionAttribute);
@@ -51,7 +51,7 @@ const materials: THREE.MeshBasicMaterial[] = [
 // geometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
 
 const cube = new THREE.Mesh(geometry, materials);
-camera.position.set(0, 0, 100);
+camera.position.set(0, 0, -100);
 scene.add(cube);
 camera.lookAt(cube.position);
 scene.add(camera);
@@ -69,17 +69,30 @@ let keyFrameString = [
 	"0.0  0.0 0.0 0.0 1.0 1.0 -1.0 0.0",
 	"1.0  4.0 0.0 0.0 1.0 1.0 -1.0 30.0",
 	"2.0  8.0 0.0 0.0 1.0 1.0 -1.0 90.0",
-	// "3.0  12.0 12.0 12.0 1.0 1.0 -1.0 180.0",
-	// "4.0  12.0 18.0 18.0 1.0 1.0 -1.0 270.0",
-	// "5.0  18.0 18.0 18.0 0.0 1.0 0.0 90.0",
-	// "6.0  18.0 18.0 18.0 0.0 0.0 1.0 90.0",
-	// "7.0  25.0 12.0 12.0 1.0 0.0 0.0 0.0",
-	// "8.0  25.0 0.0 18.0 1.0 0.0 0.0 0.0",
-	// "9.0  25.0 1.0 18.0 1.0 0.0 0.0 0.0",
+	"3.0  12.0 12.0 12.0 1.0 1.0 -1.0 180.0",
+	"4.0  12.0 18.0 18.0 1.0 1.0 -1.0 270.0",
+	"5.0  18.0 18.0 18.0 0.0 1.0 0.0 90.0",
+	"6.0  18.0 18.0 18.0 0.0 0.0 1.0 90.0",
+	"7.0  25.0 12.0 12.0 1.0 0.0 0.0 0.0",
+	"8.0  25.0 0.0 18.0 1.0 0.0 0.0 0.0",
+	"9.0  25.0 1.0 18.0 1.0 0.0 0.0 0.0",
 ].join("\n");
 
 let keyFrames = parseKFString(keyFrameString);
 let kfAnim = new KFAnimator(keyFrameString);
+
+//
+// initialize cube
+//
+cube.position.set(keyFrames[0].pos.x, keyFrames[0].pos.y, keyFrames[0].pos.z);
+cube.quaternion.setFromAxisAngle(
+	new THREE.Vector3(
+		keyFrames[0].orientation.xa,
+		keyFrames[0].orientation.ya,
+		keyFrames[0].orientation.za
+	),
+	keyFrames[0].orientation.theeta
+);
 
 console.log(keyFrameString);
 
@@ -93,7 +106,7 @@ cube.position.y = 0; //keyFrames[0].pos.y;
 cube.position.z = 0; //keyFrames[0].pos.z;
 console.log(renderer.domElement.clientHeight, renderer.domElement.clientWidth);
 function animate() {
-	requestAnimationFrame(animate);
+	let handle = requestAnimationFrame(animate);
 	let elapsedTime = clock.getElapsedTime();
 	let currentKF: MyKeyframe = kfAnim.getKFAt(elapsedTime);
 	cube.position.x = currentKF.pos.x;
@@ -102,10 +115,13 @@ function animate() {
 
 	cube.rotation.setFromQuaternion(currentKF.quat);
 	// if (elapsedTime <= currentKF.time)
-		// console.log(elapsedTime, 2*Math.acos(currentKF.orientation.theeta), currentKF.quat);
+	// console.log(elapsedTime, 2*Math.acos(currentKF.orientation.theeta), currentKF.quat);
 
 	// cube.position.z = currentKF.pos.z;
 	// console.log("elapsedTime : " + elapsedTime + " frame : " + currentKF);
 	renderer.render(scene, camera);
+	// if (elapsedTime >= currentKF.time){
+	// 	cancelAnimationFrame(handle);
+	// }
 }
 animate();
