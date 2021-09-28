@@ -64,10 +64,14 @@ class MyKeyframe {
 		if (xa != null && ya != null && za != null && theeta != null) {
 			this.orientation = new Orientation(xa, ya, za, theeta);
 			this.quat = new THREE.Quaternion();
-			this.quat.setFromAxisAngle(new THREE.Vector3(xa, ya, za), theeta);
+			this.quat.setFromAxisAngle(
+				new THREE.Vector3(xa, ya, za),
+				toRadians(theeta)
+			);
 		} else {
 			this.quat = new THREE.Quaternion().copy(quat);
 		}
+		this.quat.normalize();
 	}
 
 	toString(): string {
@@ -107,14 +111,21 @@ class KFAnimator {
 	private keyframes: MyKeyframe[] = [];
 	private endTime: number;
 	private u: number = 0;
+	private controlSpeed = 0.05;
 	private simulate: boolean = true;
 
 	constructor(kfstring: string) {
 		this.parseKFString(kfstring);
 		this.currentKF = this.keyframes[0];
-		this.nextKF = this.keyframes[1];
+		if (this.keyframes.length > 1) {
+			this.nextKF = this.keyframes[1];
+		} else {
+			this.nextKF = this.currentKF;
+		}
 		this.currentKFIndex = 0;
 		this.nextKFIndex = 1;
+
+		this.u = -this.controlSpeed;
 
 		this.endTime = this.keyframes[this.keyframes.length - 1].time;
 		console.log("end time: " + this.endTime);
@@ -133,36 +144,56 @@ class KFAnimator {
 		return (1 - u) * numInitial + u * numFinal;
 	}
 
-	getKFAt(time: number): MyKeyframe {
-		// return this.keyframes[0];
-		if (!this.simulate && time > this.endTime) {
-			// return this.keyframes[this.keyframes.length - 1];
-			return this.currentKF;
+	computeControlVariable(time: number) {
+		if (this.simulate) {
+			this.u += this.controlSpeed;
+		} else {
+			// conmpute from times of the two frames
+			let timeElapsedFromCurrentKF = time - this.currentKF.time;
+			let timeDiff = this.nextKF.time - this.currentKF.time;
+			this.u = timeElapsedFromCurrentKF / timeDiff;
 		}
+		this.u = Math.min(this.u, 1);
+	}
 
-		if (this.u >= 1 || (!this.simulate && time > this.nextKF.time)) {
+	incrementIndices() {
+		if (this.nextKFIndex < this.keyframes.length - 1) {
+			if (this.nextKFIndex == 0){
+				this.currentKFIndex = -1;
+			}
 			this.currentKFIndex += 1;
 			this.nextKFIndex += 1;
 			this.currentKF = this.keyframes[this.currentKFIndex];
 			this.nextKF = this.keyframes[this.nextKFIndex];
-		}
+		} else if (this.simulate) {
+			this.currentKFIndex = this.nextKFIndex;
 
-		// if (this.keyframes.length >= this.nextKFIndex) {
-		// 	this.currentKFIndex += this.keyframes.length - 1;
-		// 	this.currentKF = this.keyframes[this.currentKFIndex];
-		// }
-
-		if (!this.simulate && this.currentKFIndex >= this.keyframes.length) {
-			this.currentKFIndex = 0;
-			this.nextKFIndex = 1;
+			this.nextKFIndex = 0;
 			this.currentKF = this.keyframes[this.currentKFIndex];
 			this.nextKF = this.keyframes[this.nextKFIndex];
 		}
+	}
 
-		let timeElapsedFromCurrentKF = time - this.currentKF.time;
-		let timeDiff = this.nextKF.time - this.currentKF.time;
-		let u = timeElapsedFromCurrentKF / timeDiff;
-		// console.log(u);
+	updateFrames(time: number) {
+		if (this.simulate) {
+			if (this.u >= 1) {
+				this.incrementIndices();
+				this.u = 0;
+			}
+		} else {
+			if (time < this.endTime && time > this.nextKF.time) {
+				this.incrementIndices();
+				this.u = 0;
+			}
+		}
+	}
+
+	getKFAt(time: number): MyKeyframe {
+		// return this.keyframes[0];
+
+		this.updateFrames(time);
+		this.computeControlVariable(time);
+
 		//
 		// interpolate position
 		//
@@ -173,27 +204,20 @@ class KFAnimator {
 			this.interpolateLinear(initialPosition.y, finalPosition.y, this.u),
 			this.interpolateLinear(initialPosition.z, finalPosition.z, this.u)
 		);
-		this.u += 0.01;
-		console.log(this.u);
-
+		// console.log(this.u);
 		//
 		// interpolate orientation
 		//
-		// let initialOrientation = this.currentKF.orientation;
-		// let finalOrientation = this.nextKF.orientation;
-
 		let qInitial = new THREE.Quaternion().copy(this.currentKF.quat);
-
 		let qFinal = this.nextKF.quat;
 		// qInitial.slerp(qFinal, u);
-		let currentQuat = new THREE.Quaternion()
-			.copy(qInitial)
-			.slerp(qFinal, this.u);
+		let currentQuat = new THREE.Quaternion(); //.copy(qInitial);
+		qInitial.slerp(qFinal, this.u);
+		qInitial.normalize();
 		// currentQuat.slerpQuaternions(qInitial, qFinal, this.u);
 		// console.log(timeElapsedFromCurrentKF, this.currentKF.orientation.theeta, currentQuat);
-
 		return new MyKeyframe(
-			time,
+			this.nextKF.time,
 			currentPosition.x,
 			currentPosition.y,
 			currentPosition.z,
@@ -201,7 +225,7 @@ class KFAnimator {
 			null,
 			null,
 			null,
-			currentQuat
+			qInitial
 		);
 	}
 }
