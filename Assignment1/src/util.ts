@@ -41,3 +41,14 @@ var parseKFString = function (kfString: string): MyKeyframe[] {
 // module.exports = {
 // 	loadTextResource
 // }
+
+
+var toRadians = function (degrees: number): number {
+	// pi = 180
+
+	return degrees * Math.PI / 180;
+}
+
+var toDegrees = function(radians: number){
+	return radians * 180 / Math.PI;
+}
