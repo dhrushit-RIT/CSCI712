@@ -1,3 +1,6 @@
+
+// DAT.GUI
+
 class CRAnimator {
 	private currentKFIndex: number;
 	private nextKFIndex: number;
@@ -8,10 +11,11 @@ class CRAnimator {
 	private u: number = 0;
 	private controlSpeed = 0.05;
 	private simulate: boolean = true;
+	private totalKFs = -1;
 
 	// Catmul Rom stuff
-	private startPoint: MyKeyframe;
-	private endPoint: MyKeyframe;
+	private startFrame: MyKeyframe;
+	private endFrame: MyKeyframe;
 
 	constructor(kfstring: string) {
 		this.parseKFString(kfstring);
@@ -28,6 +32,34 @@ class CRAnimator {
 
 		this.endTime = this.keyframes[this.keyframes.length - 1].time;
 		console.log("end time: " + this.endTime);
+
+		this.startFrame = this.computeStartFrame();
+		this.endFrame = this.computeEndFrame();
+	}
+
+	private computeStartFrame() {
+		return new MyKeyframe(
+			-this.keyframes[1].time,
+			Position.difference(this.keyframes[1].pos, this.keyframes[0].pos),
+			this.keyframes[0].orientation,
+			null
+		);
+	}
+
+	private computeEndFrame() {
+		return new MyKeyframe(
+			2 * this.keyframes[this.totalKFs - 1].time -
+				this.keyframes[this.totalKFs - 2].time,
+			Position.add(
+				Position.difference(
+					this.keyframes[this.totalKFs - 2].pos,
+					this.keyframes[this.totalKFs - 1].pos
+				),
+				this.keyframes[this.totalKFs - 1].pos
+			),
+			this.keyframes[this.totalKFs - 1].orientation,
+			null
+		);
 	}
 
 	parseKFString(kfstring: string) {
@@ -37,6 +69,7 @@ class CRAnimator {
 			let kf = MyKeyframe.createFromString(kfstr);
 			this.keyframes.push(kf);
 		}
+		this.totalKFs = this.keyframes.length;
 	}
 
 	interpolateLinear(numInitial: number, numFinal: number, u: number) {
@@ -85,6 +118,12 @@ class CRAnimator {
 				this.u = 0;
 			}
 		}
+	}
+
+	interpolateCatmulRom(): Position {
+		if (this.currentKFIndex == 0) {
+		}
+		return new Position(0, 0, 0);
 	}
 
 	getKFAt(time: number): MyKeyframe {
