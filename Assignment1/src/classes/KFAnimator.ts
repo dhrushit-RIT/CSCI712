@@ -7,7 +7,7 @@ class KFAnimator {
 	private endTime: number;
 	private u: number = 0;
 	private controlSpeed = 0.05;
-	private simulate: boolean = true;
+	private simulate: boolean = false;
 
 	constructor(kfstring: string) {
 		this.parseKFString(kfstring);
