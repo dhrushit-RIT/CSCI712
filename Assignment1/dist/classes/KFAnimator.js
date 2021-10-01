@@ -85,5 +85,13 @@ class KFAnimator {
         qInitial.normalize();
         return new MyKeyframe(this.nextKF.time, new Position(currentPosition.x, currentPosition.y, currentPosition.z), null, qInitial);
     }
+    resetFrames() {
+        if (!this.simulate) {
+            this.currentKFIndex = 0;
+            this.nextKFIndex = 1;
+            this.currentKF = this.keyframes[this.currentKFIndex];
+            this.nextKF = this.keyframes[this.nextKFIndex];
+        }
+    }
 }
 //# sourceMappingURL=KFAnimator.js.map

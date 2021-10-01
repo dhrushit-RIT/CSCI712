@@ -2,22 +2,19 @@ const scene_linear = new THREE.Scene();
 const scene_catmull = new THREE.Scene();
 const canvas_linear = document.getElementById("c1");
 const canvas_catmull = document.getElementById("c2");
+const side = window.innerWidth / 3;
 const renderer_linear = new THREE.WebGLRenderer({ canvas: canvas_linear });
 const renderer_catmull = new THREE.WebGLRenderer({ canvas: canvas_catmull });
-const side = window.innerWidth / 3;
+renderer_linear.setSize(side, side);
+renderer_catmull.setSize(side, side);
 let fieldOfView = 45, aspectRatio = 4 / 3, near = 0.1, far = 1000;
 const camera_linear = new THREE.PerspectiveCamera(60, 1, 0.1, 1000);
 const camera_catmull = new THREE.PerspectiveCamera(60, 1, 0.1, 1000);
-renderer_linear.setSize(side, side);
-renderer_catmull.setSize(side, side);
 document.body.appendChild(renderer_linear.domElement);
 const geometry = new THREE.BoxGeometry(1, 1, 1);
-console.log(geometry);
 const material = new THREE.MeshBasicMaterial({
     vertexColors: false,
 });
-const positionAttribute = geometry.getAttribute("position");
-const colors = [];
 const materials = [
     new THREE.MeshBasicMaterial({ color: 0xff0000 }),
     new THREE.MeshBasicMaterial({ color: 0x00ff00 }),
@@ -30,10 +27,10 @@ const cube_linear = new THREE.Mesh(geometry, materials);
 const cube_catmull = new THREE.Mesh(geometry, materials);
 camera_linear.position.set(0, 0, -20);
 camera_catmull.position.set(0, 0, -20);
-scene_linear.add(cube_linear);
-scene_catmull.add(cube_catmull);
 camera_linear.lookAt(5, 0, 0);
 camera_catmull.lookAt(5, 0, 0);
+scene_linear.add(cube_linear);
+scene_catmull.add(cube_catmull);
 scene_linear.add(camera_linear);
 scene_catmull.add(camera_catmull);
 const clock = new THREE.Clock();
@@ -65,9 +62,18 @@ cube_catmull.quaternion.setFromAxisAngle(new THREE.Vector3(keyFrames[0].orientat
 console.log(keyFrameString);
 const canvas = renderer_linear.domElement;
 console.log(renderer_linear.domElement.clientHeight, renderer_linear.domElement.clientWidth);
+let endTime = keyFrames[keyFrames.length - 1].time;
+let endTimeFactor = 1;
 function animate() {
     let handle = requestAnimationFrame(animate);
     let elapsedTime = clock.getElapsedTime();
+    if (elapsedTime > endTime) {
+        endTimeFactor += 1;
+        endTime = keyFrames[keyFrames.length - 1].time * endTimeFactor;
+        kfAnim_linear.resetFrames();
+        kfAnim_catmull.resetFrames();
+    }
+    elapsedTime = elapsedTime % keyFrames[keyFrames.length - 1].time;
     let currentKF_linear = kfAnim_linear.getKFAt(elapsedTime);
     let currentKF_catmull = kfAnim_catmull.getKFAt(elapsedTime);
     cube_linear.position.x = currentKF_linear.pos.x;

@@ -128,7 +128,6 @@ class CRAnimator {
     getKFAt(time) {
         this.updateFrames(time);
         this.computeControlVariable(time);
-        console.log(this.u);
         let initialPosition = this.currentKF.pos;
         let finalPosition = this.nextKF.pos;
         let currentPosition = this.interpolateCatmulRom();
@@ -138,6 +137,14 @@ class CRAnimator {
         qInitial.slerp(qFinal, this.u);
         qInitial.normalize();
         return new MyKeyframe(this.nextKF.time, new Position(currentPosition.x, currentPosition.y, currentPosition.z), null, qInitial);
+    }
+    resetFrames() {
+        if (!this.simulate) {
+            this.currentKFIndex = 0;
+            this.nextKFIndex = 1;
+            this.currentKF = this.keyframes[this.currentKFIndex];
+            this.nextKF = this.keyframes[this.nextKFIndex];
+        }
     }
 }
 //# sourceMappingURL=CRAnimator.js.map
