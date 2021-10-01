@@ -1,14 +1,14 @@
 class KFAnimator {
-	private currentKFIndex: number;
-	private nextKFIndex: number;
-	private currentKF: MyKeyframe = null;
-	private nextKF: MyKeyframe = null;
-	private keyframes: MyKeyframe[] = [];
-	private endTime: number;
-	private u: number = 0;
-	private controlSpeed = 0.05;
-	private simulate: boolean = false;
-
+	protected currentKFIndex: number;
+	protected nextKFIndex: number;
+	protected currentKF: MyKeyframe = null;
+	protected nextKF: MyKeyframe = null;
+	protected keyframes: MyKeyframe[] = [];
+	protected endTime: number;
+	protected u: number = 0;
+	protected controlSpeed = 0.05;
+	protected simulate: boolean = false;
+	protected totalKFs = -1;
 	constructor(kfstring: string) {
 		this.parseKFString(kfstring);
 		this.currentKF = this.keyframes[0];
@@ -17,13 +17,11 @@ class KFAnimator {
 		} else {
 			this.nextKF = this.currentKF;
 		}
+
 		this.currentKFIndex = 0;
 		this.nextKFIndex = 1;
-
 		this.u = -this.controlSpeed;
-
 		this.endTime = this.keyframes[this.keyframes.length - 1].time;
-		console.log("end time: " + this.endTime);
 	}
 
 	parseKFString(kfstring: string) {
@@ -33,6 +31,19 @@ class KFAnimator {
 			let kf = MyKeyframe.createFromString(kfstr);
 			this.keyframes.push(kf);
 		}
+		this.totalKFs = this.keyframes.length;
+	}
+
+	interpolatePosition(
+		initialPosition: Position,
+		finalPosition: Position,
+		u: number
+	) {
+		return new Position(
+			this.interpolateLinear(initialPosition.x, finalPosition.x, this.u),
+			this.interpolateLinear(initialPosition.y, finalPosition.y, this.u),
+			this.interpolateLinear(initialPosition.z, finalPosition.z, this.u)
+		);
 	}
 
 	interpolateLinear(numInitial: number, numFinal: number, u: number) {
@@ -93,17 +104,17 @@ class KFAnimator {
 		//
 		let initialPosition: Position = this.currentKF.pos;
 		let finalPosition: Position = this.nextKF.pos;
-		let currentPosition: Position = new Position(
-			this.interpolateLinear(initialPosition.x, finalPosition.x, this.u),
-			this.interpolateLinear(initialPosition.y, finalPosition.y, this.u),
-			this.interpolateLinear(initialPosition.z, finalPosition.z, this.u)
+		let currentPosition: Position = this.interpolatePosition(
+			initialPosition,
+			finalPosition,
+			this.u
 		);
 		//
 		// interpolate orientation
 		//
 		let qInitial = new THREE.Quaternion().copy(this.currentKF.quat);
 		let qFinal = this.nextKF.quat;
-		let currentQuat = new THREE.Quaternion(); //.copy(qInitial);
+		let currentQuat = new THREE.Quaternion();
 		qInitial.slerp(qFinal, this.u);
 		qInitial.normalize();
 		return new MyKeyframe(
