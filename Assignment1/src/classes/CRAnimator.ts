@@ -107,7 +107,6 @@ class CRAnimator {
 			this.nextKF = this.keyframes[this.nextKFIndex];
 		} else if (this.simulate) {
 			this.currentKFIndex = this.nextKFIndex;
-
 			this.nextKFIndex = 0;
 			this.currentKF = this.keyframes[this.currentKFIndex];
 			this.nextKF = this.keyframes[this.nextKFIndex];
@@ -187,7 +186,6 @@ class CRAnimator {
 
 		this.updateFrames(time);
 		this.computeControlVariable(time);
-		console.log(this.u);
 
 		//
 		// interpolate position
@@ -195,20 +193,14 @@ class CRAnimator {
 		let initialPosition: Position = this.currentKF.pos;
 		let finalPosition: Position = this.nextKF.pos;
 		let currentPosition: Position = this.interpolateCatmulRom();
-		// currentPosition.set();
-		// console.log(this.u);
 		//
 		// interpolate orientation
 		//
-		// console.log(currentPosition);
 		let qInitial = new THREE.Quaternion().copy(this.currentKF.quat);
 		let qFinal = this.nextKF.quat;
-		// qInitial.slerp(qFinal, u);
 		let currentQuat = new THREE.Quaternion(); //.copy(qInitial);
 		qInitial.slerp(qFinal, this.u);
 		qInitial.normalize();
-		// currentQuat.slerpQuaternions(qInitial, qFinal, this.u);
-		// console.log(timeElapsedFromCurrentKF, this.currentKF.orientation.theeta, currentQuat);
 		return new MyKeyframe(
 			this.nextKF.time,
 			new Position(currentPosition.x, currentPosition.y, currentPosition.z),
