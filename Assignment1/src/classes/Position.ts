@@ -8,6 +8,10 @@ class Position {
 		this.z = z;
 	}
 
+	set(pos: Position): Position {
+		return new Position(pos.x, pos.y, pos.z);
+	}
+
 	toString(): string {
 		return "( " + this.x + " ," + this.y + " ," + this.z + " )";
 	}
