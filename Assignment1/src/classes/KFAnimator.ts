@@ -7,7 +7,7 @@ class KFAnimator {
 	private endTime: number;
 	private u: number = 0;
 	private controlSpeed = 0.05;
-	private simulate: boolean = false;
+	private simulate: boolean = true;
 
 	constructor(kfstring: string) {
 		this.parseKFString(kfstring);
@@ -112,5 +112,15 @@ class KFAnimator {
 			null,
 			qInitial
 		);
+	}
+
+	resetFrames() {
+		if (!this.simulate) {
+			this.currentKFIndex = 0;
+			this.nextKFIndex = 1;
+
+			this.currentKF = this.keyframes[this.currentKFIndex];
+			this.nextKF = this.keyframes[this.nextKFIndex];
+		}
 	}
 }

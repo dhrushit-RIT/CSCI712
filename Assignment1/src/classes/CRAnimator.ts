@@ -173,7 +173,7 @@ class CRAnimator {
 		const catmulProduct = new THREE.Matrix4();
 		catmulProduct.multiplyMatrices(this.basisMatrix, controlMatrix);
 		console.log(catmulProduct);
-		catmulProduct.transpose()
+		catmulProduct.transpose();
 		U.applyMatrix4(catmulProduct);
 		return new Position(
 			U.getComponent(0),
@@ -215,5 +215,15 @@ class CRAnimator {
 			null,
 			qInitial
 		);
+	}
+
+	resetFrames() {
+		if (!this.simulate) {
+			this.currentKFIndex = 0;
+			this.nextKFIndex = 1;
+
+			this.currentKF = this.keyframes[this.currentKFIndex];
+			this.nextKF = this.keyframes[this.nextKFIndex];
+		}
 	}
 }

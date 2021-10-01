@@ -1,12 +1,20 @@
+// init scene
 const scene_linear = new THREE.Scene();
 const scene_catmull = new THREE.Scene();
+
+// init canvas
 const canvas_linear = document.getElementById("c1");
 const canvas_catmull = document.getElementById("c2");
-// const camera = new THREE.OrthographicCamera(-50, 50, 50, -50, -150, 150);
+
+// init renderer
+const side = window.innerWidth / 3;
 const renderer_linear = new THREE.WebGLRenderer({ canvas: canvas_linear });
 const renderer_catmull = new THREE.WebGLRenderer({ canvas: canvas_catmull });
+renderer_linear.setSize(side, side);
+renderer_catmull.setSize(side, side);
+
+// set up camera
 // const side = Math.min(window.innerWidth, window.innerHeight);
-const side = window.innerWidth / 3;
 let fieldOfView = 45,
 	aspectRatio = 4 / 3,
 	near = 0.1,
@@ -14,22 +22,16 @@ let fieldOfView = 45,
 
 const camera_linear = new THREE.PerspectiveCamera(60, 1, 0.1, 1000);
 const camera_catmull = new THREE.PerspectiveCamera(60, 1, 0.1, 1000);
-renderer_linear.setSize(side, side);
-renderer_catmull.setSize(side, side);
 document.body.appendChild(renderer_linear.domElement);
 
 //
 // add cube to the scene
 //
 const geometry = new THREE.BoxGeometry(1, 1, 1);
-console.log(geometry);
 const material = new THREE.MeshBasicMaterial({
 	vertexColors: false,
 });
 
-const positionAttribute = geometry.getAttribute("position");
-
-const colors = [];
 const materials: THREE.MeshBasicMaterial[] = [
 	new THREE.MeshBasicMaterial({ color: 0xff0000 }),
 	new THREE.MeshBasicMaterial({ color: 0x00ff00 }),
@@ -38,37 +40,25 @@ const materials: THREE.MeshBasicMaterial[] = [
 	new THREE.MeshBasicMaterial({ color: 0xffff00 }),
 	new THREE.MeshBasicMaterial({ color: 0x00ffff }),
 ];
-// const color = new THREE.Color();
-// console.log(positionAttribute);
-
-// for (let i = 0; i < positionAttribute.count; i += 6) {
-// 	color.set(Math.random() * 0xffffff);
-
-// 	// define the same color for each vertex of a triangle
-// 	colors.push(color.r, color.g, color.b);
-// 	colors.push(color.r, color.g, color.b);
-// 	colors.push(color.r, color.g, color.b);
-
-// 	colors.push(color.r, color.g, color.b);
-// 	colors.push(color.r, color.g, color.b);
-// 	colors.push(color.r, color.g, color.b);
-// }
-
-// geometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
 
 const cube_linear = new THREE.Mesh(geometry, materials);
 const cube_catmull = new THREE.Mesh(geometry, materials);
+
+// set up camera
 camera_linear.position.set(0, 0, -20);
 camera_catmull.position.set(0, 0, -20);
-scene_linear.add(cube_linear);
-scene_catmull.add(cube_catmull);
 camera_linear.lookAt(5, 0, 0);
 camera_catmull.lookAt(5, 0, 0);
+
+// add camera and cube to the scene
+scene_linear.add(cube_linear);
+scene_catmull.add(cube_catmull);
 scene_linear.add(camera_linear);
 scene_catmull.add(camera_catmull);
 
 const clock = new THREE.Clock();
 
+// set initial position of cubes
 cube_linear.position.x = 0;
 cube_linear.position.y = 0;
 cube_linear.position.z = 0;
@@ -141,11 +131,24 @@ console.log(
 	renderer_linear.domElement.clientHeight,
 	renderer_linear.domElement.clientWidth
 );
+
+let endTime = keyFrames[keyFrames.length - 1].time;
+let endTimeFactor = 1;
 function animate() {
 	let handle = requestAnimationFrame(animate);
 	let elapsedTime = clock.getElapsedTime();
+
+	if (elapsedTime > endTime) {
+		endTimeFactor += 1;
+		endTime = keyFrames[keyFrames.length - 1].time * endTimeFactor;
+		kfAnim_linear.resetFrames();
+		kfAnim_catmull.resetFrames();
+	}
+	elapsedTime = elapsedTime % keyFrames[keyFrames.length - 1].time;
+
 	let currentKF_linear: MyKeyframe = kfAnim_linear.getKFAt(elapsedTime);
 	let currentKF_catmull: MyKeyframe = kfAnim_catmull.getKFAt(elapsedTime);
+
 	cube_linear.position.x = currentKF_linear.pos.x;
 	cube_linear.position.y = currentKF_linear.pos.y;
 	cube_linear.position.z = currentKF_linear.pos.z;
@@ -156,15 +159,8 @@ function animate() {
 
 	cube_linear.rotation.setFromQuaternion(currentKF_linear.quat);
 	cube_catmull.rotation.setFromQuaternion(currentKF_catmull.quat);
-	// if (elapsedTime <= currentKF.time)
-	// console.log(elapsedTime, 2*Math.acos(currentKF.orientation.theeta), currentKF.quat);
 
-	// cube.position.z = currentKF.pos.z;
-	// console.log("elapsedTime : " + elapsedTime + " frame : " + currentKF);
 	renderer_linear.render(scene_linear, camera_linear);
 	renderer_catmull.render(scene_catmull, camera_catmull);
-	// if (elapsedTime >= currentKF.time){
-	// 	cancelAnimationFrame(handle);
-	// }
 }
 animate();
