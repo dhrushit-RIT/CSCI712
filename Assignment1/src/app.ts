@@ -1,21 +1,21 @@
 const scene = new THREE.Scene();
-
+const canvas_linear = document.getElementById("c1");
 // const camera = new THREE.OrthographicCamera(-50, 50, 50, -50, -150, 150);
-const renderer = new THREE.WebGLRenderer();
+const renderer_linear = new THREE.WebGLRenderer({canvas:canvas_linear});
 const side = Math.min(window.innerWidth, window.innerHeight);
 let fieldOfView = 45,
 	aspectRatio = 4 / 3,
 	near = 0.1,
 	far = 1000;
 
-const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
-renderer.setSize(side, side);
-document.body.appendChild(renderer.domElement);
+const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 1000);
+renderer_linear.setSize(side, side);
+document.body.appendChild(renderer_linear.domElement);
 
 //
 // add cube to the scene
 //
-const geometry = new THREE.BoxGeometry(5, 5, 5);
+const geometry = new THREE.BoxGeometry(1, 1, 1);
 console.log(geometry);
 const material = new THREE.MeshBasicMaterial({
 	vertexColors: false,
@@ -51,9 +51,9 @@ const materials: THREE.MeshBasicMaterial[] = [
 // geometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
 
 const cube = new THREE.Mesh(geometry, materials);
-camera.position.set(0, 0, -100);
+camera.position.set(0, 0, -20);
 scene.add(cube);
-camera.lookAt(cube.position);
+camera.lookAt(5, 0, 0);
 scene.add(camera);
 
 const clock = new THREE.Clock();
@@ -78,8 +78,9 @@ let keyFrameString = [
 	"9.0  25.0 1.0 18.0 1.0 0.0 0.0 0.0",
 ].join("\n");
 
-let keyFrames = parseKFString(keyFrameString);
-let kfAnim = new KFAnimator(keyFrameString);
+let keyFrames: MyKeyframe[] = parseKFString(keyFrameString);
+// let kfAnim = new KFAnimator(keyFrameString);
+let kfAnim = new CRAnimator(keyFrameString);
 
 //
 // initialize cube
@@ -99,12 +100,12 @@ console.log(keyFrameString);
 //
 // render
 //
-const canvas = renderer.domElement;
+const canvas = renderer_linear.domElement;
 // renderer.setClearColor(0xd8d8d8);
 cube.position.x = 0; //keyFrames[0].pos.x;
 cube.position.y = 0; //keyFrames[0].pos.y;
 cube.position.z = 0; //keyFrames[0].pos.z;
-console.log(renderer.domElement.clientHeight, renderer.domElement.clientWidth);
+console.log(renderer_linear.domElement.clientHeight, renderer_linear.domElement.clientWidth);
 function animate() {
 	let handle = requestAnimationFrame(animate);
 	let elapsedTime = clock.getElapsedTime();
@@ -119,7 +120,7 @@ function animate() {
 
 	// cube.position.z = currentKF.pos.z;
 	// console.log("elapsedTime : " + elapsedTime + " frame : " + currentKF);
-	renderer.render(scene, camera);
+	renderer_linear.render(scene, camera);
 	// if (elapsedTime >= currentKF.time){
 	// 	cancelAnimationFrame(handle);
 	// }
