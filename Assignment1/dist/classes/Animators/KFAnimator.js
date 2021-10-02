@@ -7,6 +7,7 @@ class KFAnimator {
         this.controlSpeed = 0.05;
         this.simulate = false;
         this.totalKFs = -1;
+        this.mappedControlVariable = false;
         this.parseKFString(kfstring);
         this.currentKF = this.keyframes[0];
         if (this.keyframes.length > 1) {
@@ -37,6 +38,11 @@ class KFAnimator {
     computeControlVariable(time) {
         if (this.simulate) {
             this.u += this.controlSpeed;
+        }
+        else if (this.mappedControlVariable) {
+            let timeElapsedFromCurrentKF = time - this.currentKF.time;
+            let timeDiff = this.nextKF.time - this.currentKF.time;
+            this.u = this.sigmoid(timeElapsedFromCurrentKF / timeDiff);
         }
         else {
             let timeElapsedFromCurrentKF = time - this.currentKF.time;
@@ -96,6 +102,13 @@ class KFAnimator {
             this.currentKF = this.keyframes[this.currentKFIndex];
             this.nextKF = this.keyframes[this.nextKFIndex];
         }
+    }
+    setMappedControl(shouldMapU) {
+        this.mappedControlVariable = shouldMapU;
+    }
+    sigmoid(x) {
+        const z = 10 * Math.log(2 + Math.sqrt(3)) * (x - 0.4);
+        return 1 / (1 + Math.exp(-z));
     }
 }
 //# sourceMappingURL=KFAnimator.js.map

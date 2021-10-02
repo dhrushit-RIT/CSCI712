@@ -10,7 +10,6 @@ class CRAnimator extends KFAnimator {
         return this.interpolateCatmulRom();
     }
     computeStartFrame() {
-        debugger;
         return new MyKeyframe(-this.keyframes[1].time, Position.difference(this.keyframes[1].pos, this.keyframes[0].pos), this.keyframes[0].orientation, null);
     }
     computeEndFrame() {
