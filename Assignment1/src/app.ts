@@ -1,17 +1,21 @@
 // init scene
 const scene_linear = new THREE.Scene();
 const scene_catmull = new THREE.Scene();
+const scene_ut = new THREE.Scene();
 
 // init canvas
 const canvas_linear = document.getElementById("c1");
 const canvas_catmull = document.getElementById("c2");
+const canvas_ut = document.getElementById("c3");
 
 // init renderer
 const side = window.innerWidth / 3;
 const renderer_linear = new THREE.WebGLRenderer({ canvas: canvas_linear });
 const renderer_catmull = new THREE.WebGLRenderer({ canvas: canvas_catmull });
+const renderer_ut = new THREE.WebGLRenderer({ canvas: canvas_ut });
 renderer_linear.setSize(side, side);
 renderer_catmull.setSize(side, side);
+renderer_ut.setSize(side, side);
 
 // set up camera
 // const side = Math.min(window.innerWidth, window.innerHeight);
@@ -22,7 +26,8 @@ let fieldOfView = 45,
 
 const camera_linear = new THREE.PerspectiveCamera(60, 1, 0.1, 1000);
 const camera_catmull = new THREE.PerspectiveCamera(60, 1, 0.1, 1000);
-document.body.appendChild(renderer_linear.domElement);
+const camera_ut = new THREE.PerspectiveCamera(60, 1, 0.1, 1000);
+// document.body.appendChild(renderer_linear.domElement);
 
 //
 // add cube to the scene
@@ -43,18 +48,23 @@ const materials: THREE.MeshBasicMaterial[] = [
 
 const cube_linear = new THREE.Mesh(geometry, materials);
 const cube_catmull = new THREE.Mesh(geometry, materials);
+const cube_ut = new THREE.Mesh(geometry, materials);
 
 // set up camera
 camera_linear.position.set(0, 0, -20);
 camera_catmull.position.set(0, 0, -20);
+camera_ut.position.set(0, 0, -20);
 camera_linear.lookAt(5, 0, 0);
 camera_catmull.lookAt(5, 0, 0);
+camera_ut.lookAt(5, 0, 0);
 
 // add camera and cube to the scene
 scene_linear.add(cube_linear);
 scene_catmull.add(cube_catmull);
+scene_ut.add(cube_ut);
 scene_linear.add(camera_linear);
 scene_catmull.add(camera_catmull);
+scene_ut.add(camera_ut);
 
 const clock = new THREE.Clock();
 
@@ -66,6 +76,10 @@ cube_linear.position.z = 0;
 cube_catmull.position.x = 0;
 cube_catmull.position.y = 0;
 cube_catmull.position.z = 0;
+
+cube_ut.position.x = 0;
+cube_ut.position.y = 0;
+cube_ut.position.z = 0;
 
 //
 // fetch the key frame file
@@ -86,6 +100,9 @@ let keyFrameString = [
 let keyFrames: MyKeyframe[] = parseKFString(keyFrameString);
 let kfAnim_linear = new KFAnimator(keyFrameString);
 let kfAnim_catmull = new CRAnimator(keyFrameString);
+let kfAnim_ut = new CRAnimator(keyFrameString);
+kfAnim_ut.setMappedControl(true);
+// let kfAnim_catmull = new BezierAnimator(keyFrameString);
 
 //
 // initialize cube
@@ -100,6 +117,11 @@ cube_catmull.position.set(
 	keyFrames[0].pos.y,
 	keyFrames[0].pos.z
 );
+cube_ut.position.set(
+	keyFrames[0].pos.x,
+	keyFrames[0].pos.y,
+	keyFrames[0].pos.z
+);
 cube_linear.quaternion.setFromAxisAngle(
 	new THREE.Vector3(
 		keyFrames[0].orientation.xa,
@@ -109,6 +131,14 @@ cube_linear.quaternion.setFromAxisAngle(
 	keyFrames[0].orientation.theeta
 );
 cube_catmull.quaternion.setFromAxisAngle(
+	new THREE.Vector3(
+		keyFrames[0].orientation.xa,
+		keyFrames[0].orientation.ya,
+		keyFrames[0].orientation.za
+	),
+	keyFrames[0].orientation.theeta
+);
+cube_ut.quaternion.setFromAxisAngle(
 	new THREE.Vector3(
 		keyFrames[0].orientation.xa,
 		keyFrames[0].orientation.ya,
@@ -143,11 +173,13 @@ function animate() {
 		endTime = keyFrames[keyFrames.length - 1].time * endTimeFactor;
 		kfAnim_linear.resetFrames();
 		kfAnim_catmull.resetFrames();
+		kfAnim_ut.resetFrames();
 	}
 	elapsedTime = elapsedTime % keyFrames[keyFrames.length - 1].time;
 
 	let currentKF_linear: MyKeyframe = kfAnim_linear.getKFAt(elapsedTime);
 	let currentKF_catmull: MyKeyframe = kfAnim_catmull.getKFAt(elapsedTime);
+	let currentKF_ut: MyKeyframe = kfAnim_ut.getKFAt(elapsedTime);
 
 	cube_linear.position.x = currentKF_linear.pos.x;
 	cube_linear.position.y = currentKF_linear.pos.y;
@@ -157,10 +189,16 @@ function animate() {
 	cube_catmull.position.y = currentKF_catmull.pos.y;
 	cube_catmull.position.z = currentKF_catmull.pos.z;
 
+	cube_ut.position.x = currentKF_ut.pos.x;
+	cube_ut.position.y = currentKF_ut.pos.y;
+	cube_ut.position.z = currentKF_ut.pos.z;
+
 	cube_linear.rotation.setFromQuaternion(currentKF_linear.quat);
 	cube_catmull.rotation.setFromQuaternion(currentKF_catmull.quat);
+	cube_ut.rotation.setFromQuaternion(currentKF_ut.quat);
 
 	renderer_linear.render(scene_linear, camera_linear);
 	renderer_catmull.render(scene_catmull, camera_catmull);
+	renderer_ut.render(scene_ut, camera_ut);
 }
 animate();
