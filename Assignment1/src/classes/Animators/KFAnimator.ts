@@ -9,6 +9,7 @@ class KFAnimator {
 	protected controlSpeed = 0.05;
 	protected simulate: boolean = false;
 	protected totalKFs = -1;
+	protected mappedControlVariable = false;
 	constructor(kfstring: string) {
 		this.parseKFString(kfstring);
 		this.currentKF = this.keyframes[0];
@@ -53,6 +54,11 @@ class KFAnimator {
 	computeControlVariable(time: number) {
 		if (this.simulate) {
 			this.u += this.controlSpeed;
+		} else if (this.mappedControlVariable) {
+			let timeElapsedFromCurrentKF = time - this.currentKF.time;
+			let timeDiff = this.nextKF.time - this.currentKF.time;
+			this.u = this.sigmoid(timeElapsedFromCurrentKF / timeDiff);
+			// this.u *= this.u;
 		} else {
 			// conmpute from times of the two frames
 			let timeElapsedFromCurrentKF = time - this.currentKF.time;
@@ -133,5 +139,14 @@ class KFAnimator {
 			this.currentKF = this.keyframes[this.currentKFIndex];
 			this.nextKF = this.keyframes[this.nextKFIndex];
 		}
+	}
+
+	setMappedControl(shouldMapU: boolean): void {
+		this.mappedControlVariable = shouldMapU;
+	}
+
+	sigmoid(x: number): number {
+		const z = 10 * Math.log(2 + Math.sqrt(3)) * (x - 0.4);
+		return 1 / (1 + Math.exp(-z));
 	}
 }
