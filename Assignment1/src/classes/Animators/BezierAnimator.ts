@@ -10,17 +10,17 @@ class BezierAnimator extends KFAnimator {
 		this.basisMatrix.set(
 			-1, 3, -3, 1,
 			3, -6, -3, 0,
-			-3, 3, 0, 0,
-			1, 0, 0, 0 
+			-3, 3,  0, 0,
+			1,  0,  0, 0 
 		);
 
-		this.simulate = true;
+		this.simulate = false;
 	}
 
 	addControlPointAfter(p1: Position, p2: Position, p3: Position): Position {
 		let vectorToAdd = Position.difference(p1, p2);
 		let point1 = Position.add(p2, vectorToAdd);
-		let controlPoint: Position = Position.difference(point1, p3);
+		let controlPoint: Position = Position.add(point1, p3);
 		controlPoint.x /= 2;
 		controlPoint.y /= 2;
 		controlPoint.z /= 2;
@@ -29,7 +29,7 @@ class BezierAnimator extends KFAnimator {
 	}
 
 	addControlPointBefore(point: Position, controlPointAfter: Position) {
-		let vectorToAdd = Position.difference(point, controlPointAfter);
+		let vectorToAdd = Position.difference(controlPointAfter, point);
 		let controlPointBefore = Position.add(point, vectorToAdd);
 		this.controlPointsBefore.push(controlPointBefore);
 	}
@@ -80,6 +80,7 @@ class BezierAnimator extends KFAnimator {
 			// 	points[pointIndex],
 			// 	points[pointIndex + 1]
 			// );
+			debugger;
 			let controlPointAfter = this.addControlPointAfter(
 				points[pointIndex - 1],
 				points[pointIndex],
@@ -120,7 +121,7 @@ class BezierAnimator extends KFAnimator {
 		bezierProduct.transpose();
 
 		U.applyMatrix4(bezierProduct);
-		console.log(this.u, controlMatrix);
+		// console.log(this.u, controlMatrix);
 
 		return new Position(
 			U.getComponent(0),
@@ -131,7 +132,7 @@ class BezierAnimator extends KFAnimator {
 
 	interpolateDeCasteljau(): Position {
 		let q0: Position = super.interpolatePosition(
-			this.controlPointsBefore[this.currentKFIndex],
+			this.keyframes[this.currentKFIndex].pos,
 			this.controlPointsAfter[this.currentKFIndex],
 			this.u
 		);
@@ -142,7 +143,7 @@ class BezierAnimator extends KFAnimator {
 		);
 		let q2: Position = super.interpolatePosition(
 			this.controlPointsBefore[this.nextKFIndex],
-			this.controlPointsAfter[this.nextKFIndex],
+			this.keyframes[this.nextKFIndex].pos,
 			this.u
 		);
 
@@ -150,7 +151,35 @@ class BezierAnimator extends KFAnimator {
 		let r1 = super.interpolatePosition(q1, q2, this.u);
 
 		let p = super.interpolatePosition(r0, r1, this.u);
+
 		return p;
+	}
+
+	interpolateOrientation(currentPosition: Position): THREE.Quaternion {
+		let currentU = 0;
+		let qInitial = new THREE.Quaternion().copy(this.currentKF.quat);
+		let qFinal = this.nextKF.quat;
+		let currentQ = new THREE.Quaternion();
+		while (this.u - currentU > 0.00000000001) {
+			if (this.u > currentU) {
+				currentQ.set(
+					currentQ.x + qFinal.x,
+					currentQ.y + qFinal.y,
+					currentQ.z + qFinal.z,
+					currentQ.w + qFinal.w
+				);
+				currentU = (currentU + 1) / 2;
+			} else {
+				currentQ.set(
+					currentQ.x + qInitial.x,
+					currentQ.y + qInitial.y,
+					currentQ.z + qInitial.z,
+					currentQ.w + qInitial.w
+				);
+				currentU /= 2;
+			}
+		}
+		return currentQ;
 	}
 
 	interpolatePosition(): Position {
