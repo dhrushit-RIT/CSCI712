@@ -91,7 +91,17 @@ class BezierAnimator extends KFAnimator {
 		this.addLastControlPoints();
 	}
 
+	interpolateDeCasteljau(): Position {
+		// let q0: Position = this.interpolateLinear();
+		return new Position(0, 0, 0);
+	}
+
 	interpolateBezier(): Position {
+		return this.interpolateDeCasteljau();
+		// return this.interpolateUsingMatrix();
+	}
+
+	interpolateUsingMatrix(): Position {
 		let point1: Position, point2: Position;
 		let control1: Position, control2: Position;
 
