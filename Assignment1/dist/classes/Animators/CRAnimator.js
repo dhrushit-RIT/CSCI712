@@ -51,7 +51,6 @@ class CRAnimator extends KFAnimator {
         controlMatrix.set(p1.x, p1.y, p1.z, 0, p2.x, p2.y, p2.z, 0, p3.x, p3.y, p3.z, 0, p4.x, p4.y, p4.z, 0);
         const catmulProduct = new THREE.Matrix4();
         catmulProduct.multiplyMatrices(this.basisMatrix, controlMatrix);
-        console.log(catmulProduct);
         catmulProduct.transpose();
         U.applyMatrix4(catmulProduct);
         return new Position(U.getComponent(0), U.getComponent(1), U.getComponent(2));

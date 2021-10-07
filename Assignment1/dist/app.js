@@ -91,9 +91,7 @@ cube_linear.quaternion.setFromAxisAngle(new THREE.Vector3(keyFrames[0].orientati
 cube_catmull.quaternion.setFromAxisAngle(new THREE.Vector3(keyFrames[0].orientation.xa, keyFrames[0].orientation.ya, keyFrames[0].orientation.za), keyFrames[0].orientation.theeta);
 cube_ut.quaternion.setFromAxisAngle(new THREE.Vector3(keyFrames[0].orientation.xa, keyFrames[0].orientation.ya, keyFrames[0].orientation.za), keyFrames[0].orientation.theeta);
 cube_bzd.quaternion.setFromAxisAngle(new THREE.Vector3(keyFrames[0].orientation.xa, keyFrames[0].orientation.ya, keyFrames[0].orientation.za), keyFrames[0].orientation.theeta);
-console.log(keyFrameString);
 const canvas = renderer_linear.domElement;
-console.log(renderer_linear.domElement.clientHeight, renderer_linear.domElement.clientWidth);
 let endTime = keyFrames[keyFrames.length - 1].time;
 let endTimeFactor = 1;
 function animate() {
