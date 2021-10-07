@@ -176,7 +176,7 @@ cube_bzd.quaternion.setFromAxisAngle(
 	keyFrames[0].orientation.theeta
 );
 
-console.log(keyFrameString);
+// console.log(keyFrameString);
 
 //
 // render
@@ -186,10 +186,10 @@ const canvas = renderer_linear.domElement;
 // cube_linear.position.x = 0; //keyFrames[0].pos.x;
 // cube_linear.position.y = 0; //keyFrames[0].pos.y;
 // cube_linear.position.z = 0; //keyFrames[0].pos.z;
-console.log(
-	renderer_linear.domElement.clientHeight,
-	renderer_linear.domElement.clientWidth
-);
+// console.log(
+// 	renderer_linear.domElement.clientHeight,
+// 	renderer_linear.domElement.clientWidth
+// );
 
 let endTime = keyFrames[keyFrames.length - 1].time;
 let endTimeFactor = 1;
