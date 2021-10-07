@@ -1,0 +1,39 @@
+these steps are for set up
+
+to install all the packages needed
+npm -i
+
+to run the code:
+npm run build -- --watch
+
+if you want to know how this is working, let me know
+in summay, if you check the index file, the files are coming from dist folder
+
+
+to get used to the code:
+switch to branch - learning
+git checkout learning
+I have commented out the other two canvases so that code does not go to multiple places
+
+set debugger at animate function in the app.ts
+go into the getKFAt function and explore using the step over, step into etc.
+
+explore the code:
+all the needed files are in src folder
+all classes are in the claasses folder
+all animators are in the classes/Animators folder
+main file is app.ts
+utilclasses is no longer needed
+
+
+
+basically observe the sequence of steps. the goal is to 
+1. deconstruct the problem into smaller sets of solvable problems
+2. make functions of the smallest problem you solvable
+3. to re use the functions for solving other problems
+
+to do:
+1. switch to branch feature/bezierImplementation
+2. implement the interpolatePosition function to call your function. it should return a Position
+3. regularly check the output in the browser
+
