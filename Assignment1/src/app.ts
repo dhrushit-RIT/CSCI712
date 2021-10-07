@@ -178,27 +178,27 @@ function animate() {
 	elapsedTime = elapsedTime % keyFrames[keyFrames.length - 1].time;
 
 	let currentKF_linear: MyKeyframe = kfAnim_linear.getKFAt(elapsedTime);
-	let currentKF_catmull: MyKeyframe = kfAnim_catmull.getKFAt(elapsedTime);
-	let currentKF_ut: MyKeyframe = kfAnim_ut.getKFAt(elapsedTime);
+	// let currentKF_catmull: MyKeyframe = kfAnim_catmull.getKFAt(elapsedTime);
+	// let currentKF_ut: MyKeyframe = kfAnim_ut.getKFAt(elapsedTime);
 
 	cube_linear.position.x = currentKF_linear.pos.x;
 	cube_linear.position.y = currentKF_linear.pos.y;
 	cube_linear.position.z = currentKF_linear.pos.z;
 
-	cube_catmull.position.x = currentKF_catmull.pos.x;
-	cube_catmull.position.y = currentKF_catmull.pos.y;
-	cube_catmull.position.z = currentKF_catmull.pos.z;
+	// cube_catmull.position.x = currentKF_catmull.pos.x;
+	// cube_catmull.position.y = currentKF_catmull.pos.y;
+	// cube_catmull.position.z = currentKF_catmull.pos.z;
 
-	cube_ut.position.x = currentKF_ut.pos.x;
-	cube_ut.position.y = currentKF_ut.pos.y;
-	cube_ut.position.z = currentKF_ut.pos.z;
+	// cube_ut.position.x = currentKF_ut.pos.x;
+	// cube_ut.position.y = currentKF_ut.pos.y;
+	// cube_ut.position.z = currentKF_ut.pos.z;
 
 	cube_linear.rotation.setFromQuaternion(currentKF_linear.quat);
-	cube_catmull.rotation.setFromQuaternion(currentKF_catmull.quat);
-	cube_ut.rotation.setFromQuaternion(currentKF_ut.quat);
+	// cube_catmull.rotation.setFromQuaternion(currentKF_catmull.quat);
+	// cube_ut.rotation.setFromQuaternion(currentKF_ut.quat);
 
 	renderer_linear.render(scene_linear, camera_linear);
-	renderer_catmull.render(scene_catmull, camera_catmull);
-	renderer_ut.render(scene_ut, camera_ut);
+	// renderer_catmull.render(scene_catmull, camera_catmull);
+	// renderer_ut.render(scene_ut, camera_ut);
 }
 animate();
