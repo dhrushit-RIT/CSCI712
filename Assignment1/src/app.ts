@@ -4,7 +4,6 @@ const scene_catmull = new THREE.Scene();
 const scene_ut = new THREE.Scene();
 const scene_bzd = new THREE.Scene();
 
-debugger
 // init canvas
 const canvas_linear = document.getElementById("c1");
 const canvas_catmull = document.getElementById("c2");
