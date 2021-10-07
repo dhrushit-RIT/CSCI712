@@ -129,7 +129,32 @@ class BezierAnimator extends KFAnimator {
 		);
 	}
 
+	interpolateDeCasteljau(): Position {
+		let q0: Position = super.interpolatePosition(
+			this.controlPointsBefore[this.currentKFIndex],
+			this.controlPointsAfter[this.currentKFIndex],
+			this.u
+		);
+		let q1: Position = super.interpolatePosition(
+			this.controlPointsAfter[this.currentKFIndex],
+			this.controlPointsBefore[this.nextKFIndex],
+			this.u
+		);
+		let q2: Position = super.interpolatePosition(
+			this.controlPointsBefore[this.nextKFIndex],
+			this.controlPointsAfter[this.nextKFIndex],
+			this.u
+		);
+
+		let r0 = super.interpolatePosition(q0, q1, this.u);
+		let r1 = super.interpolatePosition(q1, q2, this.u);
+
+		let p = super.interpolatePosition(r0, r1, this.u);
+		return p;
+	}
+
 	interpolatePosition(): Position {
-		return this.interpolateBezier();
+		// return this.interpolateBezier();
+		return this.interpolateDeCasteljau();
 	}
 }
