@@ -88,12 +88,15 @@ class KFAnimator {
         let initialPosition = this.currentKF.pos;
         let finalPosition = this.nextKF.pos;
         let currentPosition = this.interpolatePosition(initialPosition, finalPosition, this.u);
+        return new MyKeyframe(this.nextKF.time, new Position(currentPosition.x, currentPosition.y, currentPosition.z), null, this.interpolateOrientation(currentPosition));
+    }
+    interpolateOrientation(currentPosition) {
         let qInitial = new THREE.Quaternion().copy(this.currentKF.quat);
         let qFinal = this.nextKF.quat;
         let currentQuat = new THREE.Quaternion();
         qInitial.slerp(qFinal, this.u);
         qInitial.normalize();
-        return new MyKeyframe(this.nextKF.time, new Position(currentPosition.x, currentPosition.y, currentPosition.z), null, qInitial);
+        return qInitial;
     }
     resetFrames() {
         if (!this.simulate) {
