@@ -52,7 +52,7 @@ class BezierAnimator extends KFAnimator {
         let control1, control2;
         point1 = this.keyframes[this.currentKFIndex].pos;
         point2 = this.keyframes[this.nextKFIndex].pos;
-        control1 = this.controlPointsAfter[this.currentKFIndex];
+        control1 = this.controlPointsAfter[this.currentKFIndex + 1];
         control2 = this.controlPointsBefore[this.nextKFIndex];
         let uW = 1;
         let uZ = uW * this.u;

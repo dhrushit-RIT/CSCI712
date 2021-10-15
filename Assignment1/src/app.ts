@@ -117,7 +117,6 @@ let kfAnim_catmull = new CRAnimator(keyFrameString);
 let kfAnim_ut = new CRAnimator(keyFrameString);
 let kfAnim_bzd = new BezierAnimator(keyFrameString);
 kfAnim_ut.setMappedControl(true);
-// let kfAnim_catmull = new BezierAnimator(keyFrameString);
 
 //
 // initialize cube

@@ -32,7 +32,7 @@ class CRAnimator extends KFAnimator {
 	private computeStartFrame() {
 		return new MyKeyframe(
 			-this.keyframes[1].time,
-			Position.difference(this.keyframes[1].pos, this.keyframes[0].pos),
+			Position.add(this.keyframes[0].pos, Position.difference(this.keyframes[1].pos, this.keyframes[0].pos)),
 			this.keyframes[0].orientation,
 			null
 		);
@@ -95,7 +95,6 @@ class CRAnimator extends KFAnimator {
 			p3.x, p3.y, p3.z, 0,
 			p4.x, p4.y, p4.z, 0
 		);
-
 		const catmulProduct = new THREE.Matrix4();
 		catmulProduct.multiplyMatrices(this.basisMatrix, controlMatrix);
 		// console.log(catmulProduct);
