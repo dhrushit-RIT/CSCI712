@@ -56,9 +56,12 @@ let table: Table = new Table(geometry, materials);
 //
 // setup a ball
 //
-const geometry_ball = new THREE.SphereGeometry(BALL_DIM_FT, 32, 16);
+
+const geometry_ball = new THREE.SphereGeometry(BALL_DIM_FT, 32, 32);
 const material_ball = new THREE.MeshBasicMaterial({ color: 0xffff00 });
-const ball = new THREE.Mesh(geometry_ball, material_ball);
+let ball: Ball = new Ball(BALL_DIM_FT,geometry_ball, material_ball);
+
+// const ball = new THREE.Mesh(geometry_ball, material_ball);
 scene.add(ball);
 
 // set up camera
@@ -91,6 +94,9 @@ const canvas = renderer.domElement;
 let endTimeFactor = 1;
 function animate() {
 	let handle = requestAnimationFrame(animate);
+
+	// table.myUpdate();
+	// ball1.
 	renderer.render(scene, camera);
 }
 animate();

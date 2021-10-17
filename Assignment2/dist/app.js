@@ -5,7 +5,10 @@ renderer.setSize(side, side);
 let fieldOfView = 45, aspectRatio = 4 / 3, near = 0.1, far = 1000;
 const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 1000);
 document.body.appendChild(renderer.domElement);
-const geometry = new THREE.BoxGeometry(1, 1, 1);
+const TABLE_LENGTH_FT = 12;
+const TABLE_WIDTH_FT = 6;
+const BALL_DIM_FT = 0.0859375;
+const geometry = new THREE.BoxGeometry(TABLE_LENGTH_FT, 0.1, TABLE_WIDTH_FT);
 const material = new THREE.MeshBasicMaterial({
     vertexColors: false,
 });
@@ -17,15 +20,22 @@ const materials = [
     new THREE.MeshBasicMaterial({ color: 0xffff00 }),
     new THREE.MeshBasicMaterial({ color: 0x00ffff }),
 ];
-const cube = new THREE.Mesh(geometry, materials);
-camera.position.set(0, 0, -20);
+let table = new Table(geometry, materials);
+const geometry_ball = new THREE.SphereGeometry(BALL_DIM_FT, 32, 32);
+const material_ball = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+let ball = new Ball(BALL_DIM_FT, geometry_ball, material_ball);
+scene.add(ball);
+camera.position.set(7, 7, -7);
 camera.lookAt(0, 0, 0);
-scene.add(cube);
+scene.add(table);
 scene.add(camera);
 const clock = new THREE.Clock();
-cube.position.x = 0;
-cube.position.y = 0;
-cube.position.z = 0;
+table.position.x = 0;
+table.position.y = -0.1;
+table.position.z = 0;
+ball.position.x = 0;
+ball.position.y = 0;
+ball.position.z = 0;
 const canvas = renderer.domElement;
 let endTimeFactor = 1;
 function animate() {
