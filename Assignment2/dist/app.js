@@ -8,7 +8,6 @@ document.body.appendChild(renderer.domElement);
 const TABLE_LENGTH_FT = 12;
 const TABLE_WIDTH_FT = 6;
 const BALL_DIM_FT = 0.0859375;
-const geometry = new THREE.BoxGeometry(TABLE_LENGTH_FT, 0.1, TABLE_WIDTH_FT);
 const material = new THREE.MeshBasicMaterial({
     vertexColors: false,
 });
@@ -20,7 +19,7 @@ const materials = [
     new THREE.MeshBasicMaterial({ color: 0xffff00 }),
     new THREE.MeshBasicMaterial({ color: 0x00ffff }),
 ];
-let table = new Table(geometry, materials);
+let table = new Table(materials);
 const geometry_ball = new THREE.SphereGeometry(BALL_DIM_FT, 32, 32);
 const material_ball = new THREE.MeshBasicMaterial({ color: 0xffff00 });
 let ball = new Ball(BALL_DIM_FT, geometry_ball, material_ball);

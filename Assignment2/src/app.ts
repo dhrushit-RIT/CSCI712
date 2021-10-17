@@ -26,7 +26,6 @@ const TABLE_LENGTH_FT = 12;
 const TABLE_WIDTH_FT = 6;
 const BALL_DIM_FT = 0.0859375;
 
-const geometry = new THREE.BoxGeometry(TABLE_LENGTH_FT, 0.1, TABLE_WIDTH_FT);
 const material = new THREE.MeshBasicMaterial({
 	vertexColors: false,
 });
@@ -38,15 +37,9 @@ const materials: THREE.MeshBasicMaterial[] = [
 	new THREE.MeshBasicMaterial({ color: 0xff00ff }),
 	new THREE.MeshBasicMaterial({ color: 0xffff00 }),
 	new THREE.MeshBasicMaterial({ color: 0x00ffff }),
-	// new THREE.MeshBasicMaterial({ color: 0x00ff00 }),
-	// new THREE.MeshBasicMaterial({ color: 0x00ff00 }),
-	// new THREE.MeshBasicMaterial({ color: 0x00ff00 }),
-	// new THREE.MeshBasicMaterial({ color: 0x00ff00 }),
-	// new THREE.MeshBasicMaterial({ color: 0x00ff00 }),
-	// new THREE.MeshBasicMaterial({ color: 0x00ff00 }),
 ];
 
-let table: Table = new Table(geometry, materials);
+let table: Table = new Table(materials);
 
 // Table.createTable().then((ret_table) => {
 // 	table = ret_table;

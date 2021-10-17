@@ -1,30 +1,39 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-class Table extends THREE.Mesh {
-    constructor(geometry, material) {
-        super(geometry, material);
-    }
-    static createTable() {
-        return __awaiter(this, void 0, void 0, function* () {
-            return new Promise((resolve, reject) => {
-                const geometry = new THREE.BoxGeometry(22, 16, 2);
-                const loader = new THREE.TextureLoader();
-                const poolTableTextureSource = "./pool_table/pool_table.png";
-                let texture;
-                loader.loadAsync(poolTableTextureSource).then((tex) => {
-                    texture = tex;
-                });
-                const material = new THREE.MeshBasicMaterial({ map: texture });
-                resolve(new Table(geometry, materials));
-            });
-        });
+class Table extends THREE.Group {
+    constructor(material) {
+        super();
+        this.frictionCoefficient = {
+            ball: 0.3,
+        };
+        const surfaceGeometry = new THREE.BoxGeometry(Table.TABLE_LENGTH, 0.1, Table.TABLE_WIDTH);
+        const cushionGeometry = new THREE.BoxGeometry(Table.TABLE_WIDTH, 0.5, 0.1);
+        this.surface = new THREE.Mesh(surfaceGeometry, material);
+        this.cushion1 = new TableCushion(cushionGeometry, material, Table.TABLE_WIDTH);
+        this.cushion2 = new TableCushion(cushionGeometry, material, Table.TABLE_LENGTH);
+        this.cushion3 = new TableCushion(cushionGeometry, material, Table.TABLE_WIDTH);
+        this.cushion4 = new TableCushion(cushionGeometry, material, Table.TABLE_LENGTH);
+        this.cushion5 = new TableCushion(cushionGeometry, material, Table.TABLE_LENGTH);
+        this.cushion6 = new TableCushion(cushionGeometry, material, Table.TABLE_LENGTH);
+        this.cushion1.rotateY(Math.PI / 2);
+        this.cushion4.rotateY(Math.PI / 2);
+        this.cushion1.position.setX(Table.TABLE_WIDTH);
+        this.cushion4.position.setX(-Table.TABLE_WIDTH);
+        this.cushion2.position.setX(Table.TABLE_WIDTH / 2);
+        this.cushion2.position.setZ(Table.TABLE_WIDTH / 2);
+        this.cushion3.position.setX(-Table.TABLE_WIDTH / 2);
+        this.cushion3.position.setZ(Table.TABLE_WIDTH / 2);
+        this.cushion5.position.setX(Table.TABLE_WIDTH / 2);
+        this.cushion5.position.setZ(-Table.TABLE_WIDTH / 2);
+        this.cushion6.position.setX(-Table.TABLE_WIDTH / 2);
+        this.cushion6.position.setZ(-Table.TABLE_WIDTH / 2);
+        this.add(this.surface);
+        this.add(this.cushion1);
+        this.add(this.cushion2);
+        this.add(this.cushion3);
+        this.add(this.cushion4);
+        this.add(this.cushion5);
+        this.add(this.cushion6);
     }
 }
+Table.TABLE_WIDTH = 6;
+Table.TABLE_LENGTH = 12;
 //# sourceMappingURL=Table.js.map
