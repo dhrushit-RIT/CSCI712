@@ -87,6 +87,13 @@ class Table extends THREE.Group {
 		this.cushion6.position.setX(-Table.TABLE_WIDTH / 2);
 		this.cushion6.position.setZ(-Table.TABLE_WIDTH / 2);
 
+		this.cushion1.geometry.computeBoundingBox();
+		this.cushion2.geometry.computeBoundingBox();
+		this.cushion3.geometry.computeBoundingBox();
+		this.cushion4.geometry.computeBoundingBox();
+		this.cushion5.geometry.computeBoundingBox();
+		this.cushion6.geometry.computeBoundingBox();
+
 		this.add(this.surface);
 		this.add(this.cushion1);
 		this.add(this.cushion2);
@@ -94,13 +101,6 @@ class Table extends THREE.Group {
 		this.add(this.cushion4);
 		this.add(this.cushion5);
 		this.add(this.cushion6);
-
-		this.cushion1.geometry.computeBoundingBox();
-		this.cushion2.geometry.computeBoundingBox();
-		this.cushion3.geometry.computeBoundingBox();
-		this.cushion4.geometry.computeBoundingBox();
-		this.cushion5.geometry.computeBoundingBox();
-		this.cushion6.geometry.computeBoundingBox();
 
 		this.add(new THREE.BoxHelper(this.cushion1, 0xffff00));
 		this.add(new THREE.BoxHelper(this.cushion2, 0xffff00));
@@ -113,24 +113,26 @@ class Table extends THREE.Group {
 	checkCollisionWithCushion(objectBoundingBox: THREE.Box3): Boolean {
 		let colliding = false;
 
-		colliding =
-			colliding ||
-			this.cushion1.geometry.boundingBox.intersectsBox(objectBoundingBox);
-		colliding =
-			colliding ||
-			this.cushion2.geometry.boundingBox.intersectsBox(objectBoundingBox);
-		colliding =
-			colliding ||
-			this.cushion3.geometry.boundingBox.intersectsBox(objectBoundingBox);
-		colliding =
-			colliding ||
-			this.cushion4.geometry.boundingBox.intersectsBox(objectBoundingBox);
-		colliding =
-			colliding ||
-			this.cushion5.geometry.boundingBox.intersectsBox(objectBoundingBox);
-		colliding =
-			colliding ||
-			this.cushion6.geometry.boundingBox.intersectsBox(objectBoundingBox);
+		let cushion1BB = this.cushion1.geometry.boundingBox.clone();
+		let cushion2BB = this.cushion2.geometry.boundingBox.clone();
+		let cushion3BB = this.cushion3.geometry.boundingBox.clone();
+		let cushion4BB = this.cushion4.geometry.boundingBox.clone();
+		let cushion5BB = this.cushion5.geometry.boundingBox.clone();
+		let cushion6BB = this.cushion6.geometry.boundingBox.clone();
+
+		cushion1BB.applyMatrix4(this.cushion1.matrixWorld);
+		cushion2BB.applyMatrix4(this.cushion2.matrixWorld);
+		cushion3BB.applyMatrix4(this.cushion3.matrixWorld);
+		cushion4BB.applyMatrix4(this.cushion4.matrixWorld);
+		cushion5BB.applyMatrix4(this.cushion5.matrixWorld);
+		cushion6BB.applyMatrix4(this.cushion6.matrixWorld);
+
+		colliding = colliding || cushion1BB.intersectsBox(objectBoundingBox);
+		colliding = colliding || cushion2BB.intersectsBox(objectBoundingBox);
+		colliding = colliding || cushion3BB.intersectsBox(objectBoundingBox);
+		colliding = colliding || cushion4BB.intersectsBox(objectBoundingBox);
+		colliding = colliding || cushion5BB.intersectsBox(objectBoundingBox);
+		colliding = colliding || cushion6BB.intersectsBox(objectBoundingBox);
 
 		return colliding;
 	}

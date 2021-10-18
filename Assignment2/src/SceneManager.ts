@@ -24,7 +24,7 @@ class SceneManager {
 		this.table.position.z = 0;
 		
 		// set the ball initial position
-		ball.position.x = 0;//-Table.TABLE_LENGTH / 2;
+		ball.position.x = 0; // -Table.TABLE_LENGTH / 2;
 		ball.position.y = 0;
 		ball.position.z = 0;
 
@@ -64,10 +64,10 @@ class SceneManager {
 
 	detectBallCushionCollision(): Boolean {
 		for (let ball of this.balls) {
-			ball.geometry.computeBoundingBox();
+			// ball.geometry.computeBoundingBox();
 
-			const ballBB = ball.geometry.boundingBox;
-
+			const ballBB = ball.geometry.boundingBox.clone();
+			ballBB.applyMatrix4(ball.matrixWorld);
 			if (this.table.checkCollisionWithCushion(ballBB)) {
 				return true;
 			}
@@ -93,7 +93,7 @@ class SceneManager {
 		}
 
 		if (this.detectCollision()) {
-			console.log("Collision Detected");
+			// console.log("Collision Detected");
 			const collidingOBjects = this.determineCollision();
 			this.handleCollision(collidingOBjects);
 		}
