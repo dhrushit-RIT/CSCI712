@@ -10,14 +10,21 @@ class Ball extends THREE.Mesh {
 	private mass: number;
 	private acceleration: number;
 	private angacceleration: number;
-	static BALL_DIM_FT = 0.0859375;
+	static BALL_DIM_FT = 1;
+	// static BALL_DIM_FT = 0.0859375;
 
 	constructor(radius: number) {
-		const geometry_ball = new THREE.SphereGeometry(BALL_DIM_FT, 32, 32);
+		const geometry_ball = new THREE.SphereGeometry(Ball.BALL_DIM_FT, 32, 32);
 		const material_ball = new THREE.MeshBasicMaterial({ color: 0xffff00 });
 		super(geometry_ball, material_ball);
 		this.radius = radius;
 	}
 
 	myUpdate() {}
+
+	exertForce() {}
+}
+
+interface IBall {
+	exertForce(): void;
 }
