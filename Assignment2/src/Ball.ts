@@ -1,7 +1,7 @@
 class Ball extends THREE.Mesh {
-    
-	static BALL_DIM_FT = 1;
-	// static BALL_DIM_FT = 0.0859375;
+
+    static BALL_DIM_FT = 1;
+    // static BALL_DIM_FT = 0.0859375;
 
     private radius: number;
     private initialvelocity: number;
@@ -23,13 +23,13 @@ class Ball extends THREE.Mesh {
 
     // this.initialvelocity= 1;
 
-    
-	constructor(radius: number) {
-		const geometry_ball = new THREE.SphereGeometry(Ball.BALL_DIM_FT, 32, 32);
-		const material_ball = new THREE.MeshBasicMaterial({ color: 0xffff00 });
-		super(geometry_ball, material_ball);
-		this.radius = radius;
-	}
+
+    constructor(radius: number) {
+        const geometry_ball = new THREE.SphereGeometry(Ball.BALL_DIM_FT, 32, 32);
+        const material_ball = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+        super(geometry_ball, material_ball);
+        this.radius = radius;
+    }
 
     setParamsball() {
 
@@ -43,7 +43,7 @@ class Ball extends THREE.Mesh {
 
         const axis = new THREE.Vector3();
 
-        axis.set(this.xVel,0, this.zVel).normalize();
+        axis.set(this.xVel, 0, this.zVel).normalize();
         axis.cross(THREE.Object3D.DefaultUp);
 
         // this.xVel *= this.friction; 
@@ -53,17 +53,29 @@ class Ball extends THREE.Mesh {
         const angle = -totalVelocity / (Math.PI * this.radius) * Math.PI;
         // geometry_ball.rotateOnAxis( axis, angle );
 
-        let vels = new THREE.Vector3(this.xVel,0, this.zVel);
+        let vels = new THREE.Vector3(this.xVel, 0, this.zVel);
         return vels;
 
     }
 
 
-	myUpdate() {}
+    myUpdate() {
 
-	exertForce() {}
+        let vels = this.setParamsball();
+
+        vels.x *= 0.7;
+        vels.z *= 0.7;
+
+        // add velocity to ball
+        this.position.x += vels.x;
+        this.position.y += 0;
+        this.position.z += vels.z;
+
+    }
+
+    exertForce() { }
 }
 
 interface IBall {
-	exertForce(): void;
+    exertForce(): void;
 }
