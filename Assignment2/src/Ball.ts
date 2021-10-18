@@ -71,9 +71,11 @@ class Ball extends THREE.Mesh {
         this.position.y += 0;
         this.position.z += vels.z;
 
+        this.updateMatrix();
+		this.updateMatrixWorld(true);
     }
 
-    exertForce() { }
+	exertForce() {}
 }
 
 interface IBall {
