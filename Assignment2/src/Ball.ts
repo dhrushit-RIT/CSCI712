@@ -10,8 +10,8 @@ class Ball extends THREE.Mesh {
 	private mass: number;
 	private acceleration: number;
 	private angacceleration: number;
-	static BALL_DIM_FT = 1;
-	// static BALL_DIM_FT = 0.0859375;
+	// static BALL_DIM_FT = 1;
+	static BALL_DIM_FT = 0.0859375;
 
 	constructor(radius: number) {
 		const geometry_ball = new THREE.SphereGeometry(Ball.BALL_DIM_FT, 32, 32);
@@ -20,7 +20,10 @@ class Ball extends THREE.Mesh {
 		this.radius = radius;
 	}
 
-	myUpdate() {}
+	myUpdate() {
+		this.updateMatrix();
+		this.updateMatrixWorld(true);
+	}
 
 	exertForce() {}
 }
