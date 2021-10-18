@@ -1,4 +1,7 @@
 class Ball extends THREE.Mesh {
+    
+	static BALL_DIM_FT = 1;
+	// static BALL_DIM_FT = 0.0859375;
 
     private radius: number;
     private initialvelocity: number;
@@ -20,10 +23,13 @@ class Ball extends THREE.Mesh {
 
     // this.initialvelocity= 1;
 
-    constructor(radius: number, geometry_ball: THREE.SphereGeometry, material_ball: THREE.MeshBasicMaterial) {
-        super(geometry_ball, material_ball);
-        this.radius = radius;
-    }
+    
+	constructor(radius: number) {
+		const geometry_ball = new THREE.SphereGeometry(Ball.BALL_DIM_FT, 32, 32);
+		const material_ball = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+		super(geometry_ball, material_ball);
+		this.radius = radius;
+	}
 
     setParamsball() {
 
@@ -53,4 +59,11 @@ class Ball extends THREE.Mesh {
     }
 
 
+	myUpdate() {}
+
+	exertForce() {}
+}
+
+interface IBall {
+	exertForce(): void;
 }

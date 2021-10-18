@@ -32,6 +32,40 @@ class Table extends THREE.Group {
         this.add(this.cushion4);
         this.add(this.cushion5);
         this.add(this.cushion6);
+        this.cushion1.geometry.computeBoundingBox();
+        this.cushion2.geometry.computeBoundingBox();
+        this.cushion3.geometry.computeBoundingBox();
+        this.cushion4.geometry.computeBoundingBox();
+        this.cushion5.geometry.computeBoundingBox();
+        this.cushion6.geometry.computeBoundingBox();
+        this.add(new THREE.BoxHelper(this.cushion1, 0xffff00));
+        this.add(new THREE.BoxHelper(this.cushion2, 0xffff00));
+        this.add(new THREE.BoxHelper(this.cushion3, 0xffff00));
+        this.add(new THREE.BoxHelper(this.cushion4, 0xffff00));
+        this.add(new THREE.BoxHelper(this.cushion5, 0xffff00));
+        this.add(new THREE.BoxHelper(this.cushion6, 0xffff00));
+    }
+    checkCollisionWithCushion(objectBoundingBox) {
+        let colliding = false;
+        colliding =
+            colliding ||
+                this.cushion1.geometry.boundingBox.intersectsBox(objectBoundingBox);
+        colliding =
+            colliding ||
+                this.cushion2.geometry.boundingBox.intersectsBox(objectBoundingBox);
+        colliding =
+            colliding ||
+                this.cushion3.geometry.boundingBox.intersectsBox(objectBoundingBox);
+        colliding =
+            colliding ||
+                this.cushion4.geometry.boundingBox.intersectsBox(objectBoundingBox);
+        colliding =
+            colliding ||
+                this.cushion5.geometry.boundingBox.intersectsBox(objectBoundingBox);
+        colliding =
+            colliding ||
+                this.cushion6.geometry.boundingBox.intersectsBox(objectBoundingBox);
+        return colliding;
     }
 }
 Table.TABLE_WIDTH = 6;
