@@ -1,16 +1,12 @@
 // init scene
 const scene = new THREE.Scene();
 
-// init canvas
-// const canvas_linear = document.getElementById("c1");
-
 // init renderer
 const side = window.innerWidth / 3;
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(side, side);
 
 // set up camera
-// const side = Math.min(window.innerWidth, window.innerHeight);
 let fieldOfView = 45,
 	aspectRatio = 4 / 3,
 	near = 0.1,
@@ -35,13 +31,6 @@ camera.lookAt(0, 0, 0);
 scene.add(camera);
 
 const clock = new THREE.Clock();
-
-// set initial position of cubes
-
-
-//
-// initialize cube
-//
 
 //
 // render
