@@ -24,7 +24,7 @@ document.body.appendChild(renderer.domElement);
 //
 const TABLE_LENGTH_FT = 12;
 const TABLE_WIDTH_FT = 6;
-const BALL_DIM_FT = 0.0859375;
+const BALL_DIM_FT = 0.15;
 
 const material = new THREE.MeshBasicMaterial({
 	vertexColors: false,
@@ -52,7 +52,8 @@ let table: Table = new Table(materials);
 
 const geometry_ball = new THREE.SphereGeometry(BALL_DIM_FT, 32, 32);
 const material_ball = new THREE.MeshBasicMaterial({ color: 0xffff00 });
-let ball: Ball = new Ball(BALL_DIM_FT,geometry_ball, material_ball);
+const mesh= new THREE.Mesh(geometry_ball, material_ball);
+let ball: Ball = new Ball(BALL_DIM_FT, geometry_ball, material_ball);
 
 // const ball = new THREE.Mesh(geometry_ball, material_ball);
 scene.add(ball);
@@ -76,6 +77,8 @@ ball.position.x = 0;
 ball.position.y = 0;
 ball.position.z = 0;
 
+let vels=ball.setParamsball();
+
 //
 // initialize cube
 //
@@ -86,7 +89,16 @@ ball.position.z = 0;
 const canvas = renderer.domElement;
 let endTimeFactor = 1;
 function animate() {
+
 	let handle = requestAnimationFrame(animate);
+
+	vels.x *= 0.7; 
+	vels.z *= 0.7;
+
+	 // add velocity to ball
+	 ball.position.x += vels.x;
+	 ball.position.y += 0;
+	 ball.position.z += vels.z;
 
 	// table.myUpdate();
 	// ball1.
