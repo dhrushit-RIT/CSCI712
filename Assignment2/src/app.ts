@@ -15,7 +15,6 @@ let fieldOfView = 45,
 const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 1000);
 document.body.appendChild(renderer.domElement);
 
-const BALL_DIM_FT = 0.0859375;
 
 const material = new THREE.MeshBasicMaterial({
 	vertexColors: false,
@@ -42,4 +41,5 @@ function animate() {
 	sceneManager.myUpdate();
 	renderer.render(scene, camera);
 }
+
 animate();

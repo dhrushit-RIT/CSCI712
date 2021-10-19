@@ -2,12 +2,14 @@ class SceneManager {
 	private scene: THREE.Scene;
 	private table: Table;
 	private balls: Ball[] = [];
+	static BALL_DIM_FT = 0.0859375;
+
 
 	constructor(scene: THREE.Scene) {
 		this.scene = scene;
 
 		this.table = this.createTable();
-		const ball = new Ball(BALL_DIM_FT);
+		const ball = new Ball();
 		this.balls.push(ball);
 
 		//
