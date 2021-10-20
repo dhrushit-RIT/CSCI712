@@ -31,6 +31,9 @@ scene.add(camera);
 
 const clock = new THREE.Clock();
 
+const axesHelper = new THREE.AxesHelper( 5 );
+scene.add( axesHelper );
+
 //
 // render
 //
@@ -38,7 +41,7 @@ const canvas = renderer.domElement;
 let endTimeFactor = 1;
 function animate() {
 	let handle = requestAnimationFrame(animate);
-	sceneManager.myUpdate();
+	sceneManager.myUpdate(clock.getElapsedTime());
 	renderer.render(scene, camera);
 }
 
