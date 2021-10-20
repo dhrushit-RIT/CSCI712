@@ -9,9 +9,11 @@ class Ball extends THREE.Mesh {
 	private angularmoment: number;
 	private mass: number;
 	private acceleration: THREE.Vector3;
+	private impulsiveAcceleration: THREE.Vector3;
 	private angacceleration: number;
 	private lastTime: number;
 	static BALL_RADIUS = 0.0859375;
+	private lastDeltaT: number;
 
 	constructor() {
 		const geometry_ball = new THREE.SphereGeometry(Ball.BALL_RADIUS, 32, 32);
@@ -19,9 +21,11 @@ class Ball extends THREE.Mesh {
 
 		super(geometry_ball, material_ball);
 		this.lastTime = 0;
-		this.velocity = new THREE.Vector3(0, 0, 0);
+		this.velocity = new THREE.Vector3(1, 0, 1);
 		this.acceleration = new THREE.Vector3(0, 0, 0);
+		this.impulsiveAcceleration = new THREE.Vector3(0, 0, 0);
 		this.forceOnBall = new THREE.Vector3(0, 0, 0);
+		this.mass = 1;
 	}
 
 	setPosition(pos: THREE.Vector3) {
@@ -36,23 +40,33 @@ class Ball extends THREE.Mesh {
 		this.acceleration.set(acc.x, acc.y, acc.z);
 	}
 
-	getPosition(pos: THREE.Vector3) {
+	getPosition() {
 		return this.position;
 	}
 
-	getVelocity(vel: THREE.Vector3) {
+	getVelocity() {
 		return this.velocity;
 	}
 
-	getAcceleration(acc: THREE.Vector3) {
+	getAcceleration() {
 		return this.acceleration;
+	}
+
+	getMass(): number {
+		return this.mass;
 	}
 
 	myUpdate(time: number) {
 		this.updateMatrix();
 		this.updateMatrixWorld(true);
 
-		this.updatePosition(time - this.lastTime);
+		const deltaT = time - this.lastTime;
+		this.updatePosition(deltaT);
+		this.updateVelocity(deltaT);
+		// this.updateAcceleration();
+
+		this.lastTime = time;
+		this.lastDeltaT = deltaT;
 	}
 
 	updatePosition(deltaT: number) {
@@ -68,15 +82,45 @@ class Ball extends THREE.Mesh {
 		this.velocity.add(this.acceleration.clone().multiplyScalar(deltaT));
 	}
 
-	updateAcceleration(deltaT: number) {
+	updateAcceleration() {
 		this.acceleration.add(
 			this.forceOnBall.clone().multiplyScalar(1 / this.mass)
 		);
 	}
 
-	exertForce() {}
+	applyForce(force: THREE.Vector3) {
+		this.forceOnBall = force;
+		this.updateAcceleration();
+		this.forceOnBall.set(0, 0, 0);
+	}
+
+	applyImpulse(impulse: THREE.Vector3) {
+		this.velocity.add(impulse.multiplyScalar(1 / this.mass));
+		console.log(
+			"velocity after impulse " +
+				this.velocity.x +
+				" " +
+				this.velocity.y +
+				" " +
+				this.velocity.z
+		);
+	}
+
+	goBack(): void {
+		debugger;
+		// add displacement due to velocity
+		this.position.add(
+			this.velocity.clone().multiplyScalar(-10 * this.lastDeltaT)
+		);
+		// add displacement due to acceleration
+		this.position.add(
+			this.acceleration
+				.clone()
+				.multiplyScalar(0.5 * this.lastDeltaT * this.lastDeltaT)
+		);
+	}
 }
 
 interface IBall {
-	exertForce(): void;
+	applyForce(): void;
 }
