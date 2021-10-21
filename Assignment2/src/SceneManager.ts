@@ -7,6 +7,12 @@ class SceneManager {
 	static ELASTICITY_BALL_BALL = 1;
 	static ELASTICITY_BALL_CUSHION = 1;
 
+	static COEFF_FRIC_BALL_SURFACE = 0.1;
+
+	static GRAVITY = 9.8; // N/m^2
+
+	static MIN_DELTA_T = 0.016;
+
 	constructor(scene: THREE.Scene) {
 		this.scene = scene;
 
@@ -69,7 +75,7 @@ class SceneManager {
 					const ball2Mass = ball2.getMass();
 					const impulse = ball1Vel
 						.sub(ball2Vel)
-						.multiplyScalar((1 + SceneManager.ELASTICITY_BALL_BALL))
+						.multiplyScalar(1 + SceneManager.ELASTICITY_BALL_BALL)
 						.multiplyScalar((ball1Mass * ball2Mass) / (ball1Mass + ball2Mass));
 
 					console.log(
@@ -135,7 +141,13 @@ class SceneManager {
 
 	handleCollision(collidingObjects: THREE.Mesh[]) {}
 
+	applyFriction(): void {
+		for (let ball of this.balls) {
+			ball.applyFriction();
+		}
+	}
 	myUpdate(elapsedTime: number) {
+		this.applyFriction();
 		for (let ball of this.balls) {
 			ball.myUpdate(elapsedTime);
 		}

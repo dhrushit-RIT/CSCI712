@@ -14,10 +14,13 @@ class Ball extends THREE.Mesh {
 	private lastTime: number;
 	static BALL_RADIUS = 0.0859375;
 	private lastDeltaT: number;
+	private weight: number;
 
 	constructor() {
 		const geometry_ball = new THREE.SphereGeometry(Ball.BALL_RADIUS, 32, 32);
-		const material_ball = new THREE.MeshBasicMaterial({ color: Math.random() * 0xffffff });
+		const material_ball = new THREE.MeshBasicMaterial({
+			color: Math.random() * 0xffffff,
+		});
 
 		super(geometry_ball, material_ball);
 		this.lastTime = 0;
@@ -26,6 +29,8 @@ class Ball extends THREE.Mesh {
 		this.impulsiveAcceleration = new THREE.Vector3(0, 0, 0);
 		this.forceOnBall = new THREE.Vector3(0, 0, 0);
 		this.mass = 1;
+		this.weight = this.mass * SceneManager.GRAVITY;
+		this.lastDeltaT = SceneManager.MIN_DELTA_T;
 
 		this.geometry.computeBoundingBox();
 	}
@@ -58,6 +63,10 @@ class Ball extends THREE.Mesh {
 		return this.mass;
 	}
 
+	getWeight(): number {
+		return this.weight;
+	}
+
 	myUpdate(time: number) {
 		this.updateMatrix();
 		this.updateMatrixWorld(true);
@@ -65,7 +74,7 @@ class Ball extends THREE.Mesh {
 		const deltaT = time - this.lastTime;
 		this.updatePosition(deltaT);
 		this.updateVelocity(deltaT);
-		// this.updateAcceleration();
+		this.updateAcceleration();
 
 		this.lastTime = time;
 		this.lastDeltaT = deltaT;
@@ -96,6 +105,11 @@ class Ball extends THREE.Mesh {
 		this.forceOnBall.set(0, 0, 0);
 	}
 
+	applyImpulsiveForce(force: THREE.Vector3) {
+		const impulse = force.multiplyScalar(this.lastDeltaT);
+		this.applyImpulse(impulse);
+	}
+
 	applyImpulse(impulse: THREE.Vector3) {
 		this.velocity.add(impulse.multiplyScalar(1 / this.mass));
 		console.log(
@@ -119,6 +133,26 @@ class Ball extends THREE.Mesh {
 				.clone()
 				.multiplyScalar(0.5 * this.lastDeltaT * this.lastDeltaT)
 		);
+	}
+
+	applyFriction(): void {
+		const frictionForceMag = SceneManager.COEFF_FRIC_BALL_SURFACE * this.weight;
+		const frictionalAccelerationMag = frictionForceMag / this.mass;
+		const frictionalAccelerationDir = this.velocity
+			.clone()
+			.normalize()
+			.multiplyScalar(-1);
+		const frictionalAcceleration = frictionalAccelerationDir.multiplyScalar(
+			frictionalAccelerationMag
+		);
+		const deltaTForZeroVelocity =
+			this.velocity.length() / frictionalAccelerationMag;
+
+		if (deltaTForZeroVelocity > SceneManager.MIN_DELTA_T) {
+			this.velocity.add(frictionalAcceleration.multiplyScalar(this.lastDeltaT));
+		} else {
+			this.velocity.set(0, 0, 0);
+		}
 	}
 }
 
