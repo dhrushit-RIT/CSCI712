@@ -2,22 +2,18 @@ class SceneManager {
     constructor(scene) {
         this.balls = [];
         this.scene = scene;
-        this.table = this.createTable();
-        const ball = new Ball();
-        this.balls.push(ball);
-        scene.add(this.table);
-        for (let ball of this.balls) {
-            scene.add(ball);
-        }
-        this.table.position.x = 0;
-        this.table.position.y = -0.1;
-        this.table.position.z = 0;
-        ball.position.x = 0;
-        ball.position.y = 0;
-        ball.position.z = 0;
-        scene.add(new THREE.BoxHelper(ball));
+        this.createTable(scene, new THREE.Vector3(0, -0.1, 0));
+        this.addBall(scene, new THREE.Vector3(0, 0, 0), new THREE.Vector3(2, 0, 0));
+        this.addBall(scene, new THREE.Vector3(Table.TABLE_WIDTH / 4, 0, 0), new THREE.Vector3(0, 0, 0));
     }
-    createTable() {
+    addBall(scene, initPos, initVel) {
+        const ball = new Ball();
+        ball.position.set(initPos.x, initPos.y, initPos.z);
+        ball.setVelocity(initVel);
+        scene.add(ball);
+        this.balls.push(ball);
+    }
+    createTable(scene, initPos) {
         const materials = [
             new THREE.MeshBasicMaterial({ color: 0xff0000 }),
             new THREE.MeshBasicMaterial({ color: 0x00ff00 }),
@@ -26,58 +22,83 @@ class SceneManager {
             new THREE.MeshBasicMaterial({ color: 0xffff00 }),
             new THREE.MeshBasicMaterial({ color: 0x00ffff }),
         ];
-        return new Table(materials);
+        this.table = new Table(materials);
+        this.table.position.set(initPos.x, initPos.y, initPos.z);
+        scene.add(this.table);
     }
     detectBallsCollision() {
         for (let i = 0; i < this.balls.length; i++) {
             for (let j = i + 1; j < this.balls.length; j++) {
                 const ball1 = this.balls[i];
                 const ball2 = this.balls[j];
-                const ball1BB = this.balls[i].geometry.boundingBox;
-                const ball2BB = this.balls[j].geometry.boundingBox;
-                if (ball1BB.intersectsBox(ball2BB)) {
+                const ball1BB = this.balls[i].geometry.boundingBox.clone();
+                const ball2BB = this.balls[j].geometry.boundingBox.clone();
+                const ball1BBWorld = ball1BB.applyMatrix4(ball1.matrixWorld);
+                const ball2BBWorld = ball2BB.applyMatrix4(ball2.matrixWorld);
+                if (ball1BBWorld.intersectsBox(ball2BBWorld)) {
                     const ball1Vel = ball1.getVelocity().clone();
                     const ball2Vel = ball2.getVelocity().clone();
                     const ball1Mass = ball1.getMass();
                     const ball2Mass = ball2.getMass();
                     const impulse = ball1Vel
                         .sub(ball2Vel)
-                        .multiplyScalar(-1 * (1 + SceneManager.ELASTICITY_BALL_BALL))
+                        .multiplyScalar(1 + SceneManager.ELASTICITY_BALL_BALL)
                         .multiplyScalar((ball1Mass * ball2Mass) / (ball1Mass + ball2Mass));
+                    console.log("impulse " + impulse.x + " " + impulse.y + " " + impulse.z);
                     const vecB1ToB2 = ball2
                         .getPosition()
                         .clone()
-                        .sub(ball1.getPosition());
+                        .sub(ball1.getPosition())
+                        .normalize();
                     const vecB2ToB1 = ball1
                         .getPosition()
                         .clone()
-                        .sub(ball2.getPosition());
-                    const magImpulseOnNormal = impulse.dot(vecB2ToB1);
+                        .sub(ball2.getPosition())
+                        .normalize();
+                    const magImpulseOnNormal = Math.abs(impulse.dot(vecB2ToB1));
                     const impulseOnB1 = vecB2ToB1
                         .normalize()
                         .multiplyScalar(magImpulseOnNormal);
                     const impulseOnB2 = vecB1ToB2
                         .normalize()
                         .multiplyScalar(magImpulseOnNormal);
+                    ball1.goBack();
+                    ball2.goBack();
                     ball1.applyImpulse(impulseOnB1);
                     ball2.applyImpulse(impulseOnB2);
-                    return true;
+                    console.log("impulse on ball 1 " +
+                        impulseOnB1.x +
+                        " " +
+                        impulseOnB1.y +
+                        " " +
+                        impulseOnB1.z);
+                    console.log("impulse on ball 2 " +
+                        impulseOnB2.x +
+                        " " +
+                        impulseOnB2.y +
+                        " " +
+                        impulseOnB2.z);
                 }
             }
         }
-        return false;
     }
     detectBallCushionCollision() {
         for (let ball of this.balls) {
             this.table.checkCollisionWithCushion(ball);
         }
-        return false;
     }
     detectCollision() {
-        return this.detectBallsCollision() || this.detectBallCushionCollision();
+        this.detectBallCushionCollision();
+        this.detectBallsCollision();
     }
     handleCollision(collidingObjects) { }
+    applyFriction() {
+        for (let ball of this.balls) {
+            ball.applyFriction();
+        }
+    }
     myUpdate(elapsedTime) {
+        this.applyFriction();
         for (let ball of this.balls) {
             ball.myUpdate(elapsedTime);
         }
@@ -87,4 +108,7 @@ class SceneManager {
 SceneManager.BALL_DIM_FT = 0.0859375;
 SceneManager.ELASTICITY_BALL_BALL = 1;
 SceneManager.ELASTICITY_BALL_CUSHION = 1;
+SceneManager.COEFF_FRIC_BALL_SURFACE = 0.1;
+SceneManager.GRAVITY = 9.8;
+SceneManager.MIN_DELTA_T = 0.016;
 //# sourceMappingURL=SceneManager.js.map

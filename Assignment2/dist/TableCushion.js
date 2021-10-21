@@ -1,9 +1,10 @@
 class TableCushion extends THREE.Mesh {
-    constructor(geometry, material, length, surfaceNormal) {
+    constructor(name, geometry, material, length, surfaceNormal) {
         super(geometry, material);
         this.frictionCoefficient = {
             ball: 0.3,
         };
+        this.name = name;
         this.length = length;
         this.surfaceNormal = surfaceNormal;
     }

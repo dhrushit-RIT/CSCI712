@@ -1,14 +1,19 @@
 class Ball extends THREE.Mesh {
     constructor() {
         const geometry_ball = new THREE.SphereGeometry(Ball.BALL_RADIUS, 32, 32);
-        const material_ball = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+        const material_ball = new THREE.MeshBasicMaterial({
+            color: Math.random() * 0xffffff,
+        });
         super(geometry_ball, material_ball);
         this.lastTime = 0;
-        this.velocity = new THREE.Vector3(1, 0, 1);
+        this.velocity = new THREE.Vector3(0, 0, 0);
         this.acceleration = new THREE.Vector3(0, 0, 0);
         this.impulsiveAcceleration = new THREE.Vector3(0, 0, 0);
         this.forceOnBall = new THREE.Vector3(0, 0, 0);
         this.mass = 1;
+        this.weight = this.mass * SceneManager.GRAVITY;
+        this.lastDeltaT = SceneManager.MIN_DELTA_T;
+        this.geometry.computeBoundingBox();
     }
     setPosition(pos) {
         this.position.set(pos.x, pos.y, pos.z);
@@ -31,12 +36,16 @@ class Ball extends THREE.Mesh {
     getMass() {
         return this.mass;
     }
+    getWeight() {
+        return this.weight;
+    }
     myUpdate(time) {
         this.updateMatrix();
         this.updateMatrixWorld(true);
         const deltaT = time - this.lastTime;
         this.updatePosition(deltaT);
         this.updateVelocity(deltaT);
+        this.updateAcceleration();
         this.lastTime = time;
         this.lastDeltaT = deltaT;
     }
@@ -55,6 +64,10 @@ class Ball extends THREE.Mesh {
         this.updateAcceleration();
         this.forceOnBall.set(0, 0, 0);
     }
+    applyImpulsiveForce(force) {
+        const impulse = force.multiplyScalar(this.lastDeltaT);
+        this.applyImpulse(impulse);
+    }
     applyImpulse(impulse) {
         this.velocity.add(impulse.multiplyScalar(1 / this.mass));
         console.log("velocity after impulse " +
@@ -65,11 +78,26 @@ class Ball extends THREE.Mesh {
             this.velocity.z);
     }
     goBack() {
-        debugger;
-        this.position.add(this.velocity.clone().multiplyScalar(-10 * this.lastDeltaT));
+        this.position.add(this.velocity.clone().multiplyScalar(-2 * this.lastDeltaT));
         this.position.add(this.acceleration
             .clone()
             .multiplyScalar(0.5 * this.lastDeltaT * this.lastDeltaT));
+    }
+    applyFriction() {
+        const frictionForceMag = SceneManager.COEFF_FRIC_BALL_SURFACE * this.weight;
+        const frictionalAccelerationMag = frictionForceMag / this.mass;
+        const frictionalAccelerationDir = this.velocity
+            .clone()
+            .normalize()
+            .multiplyScalar(-1);
+        const frictionalAcceleration = frictionalAccelerationDir.multiplyScalar(frictionalAccelerationMag);
+        const deltaTForZeroVelocity = this.velocity.length() / frictionalAccelerationMag;
+        if (deltaTForZeroVelocity > SceneManager.MIN_DELTA_T) {
+            this.velocity.add(frictionalAcceleration.multiplyScalar(this.lastDeltaT));
+        }
+        else {
+            this.velocity.set(0, 0, 0);
+        }
     }
 }
 Ball.BALL_RADIUS = 0.0859375;

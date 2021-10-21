@@ -7,12 +7,12 @@ class Table extends THREE.Group {
         const surfaceGeometry = new THREE.BoxGeometry(Table.TABLE_LENGTH, 0.1, Table.TABLE_WIDTH);
         const cushionGeometry = new THREE.BoxGeometry(Table.TABLE_WIDTH, 0.5, 0.1);
         this.surface = new THREE.Mesh(surfaceGeometry, material);
-        this.cushion1 = new TableCushion(cushionGeometry, material, Table.TABLE_WIDTH, new THREE.Vector3(-1, 0, 0));
-        this.cushion2 = new TableCushion(cushionGeometry, material, Table.TABLE_LENGTH, new THREE.Vector3(0, 0, -1));
-        this.cushion3 = new TableCushion(cushionGeometry, material, Table.TABLE_WIDTH, new THREE.Vector3(0, 0, -1));
-        this.cushion4 = new TableCushion(cushionGeometry, material, Table.TABLE_LENGTH, new THREE.Vector3(1, 0, 0));
-        this.cushion5 = new TableCushion(cushionGeometry, material, Table.TABLE_LENGTH, new THREE.Vector3(0, 0, 1));
-        this.cushion6 = new TableCushion(cushionGeometry, material, Table.TABLE_LENGTH, new THREE.Vector3(0, 0, 1));
+        this.cushion1 = new TableCushion("cushion1", cushionGeometry, material, Table.TABLE_WIDTH, new THREE.Vector3(-1, 0, 0));
+        this.cushion2 = new TableCushion("cushion2", cushionGeometry, material, Table.TABLE_LENGTH, new THREE.Vector3(0, 0, -1));
+        this.cushion3 = new TableCushion("cushion3", cushionGeometry, material, Table.TABLE_WIDTH, new THREE.Vector3(0, 0, -1));
+        this.cushion4 = new TableCushion("cushion4", cushionGeometry, material, Table.TABLE_LENGTH, new THREE.Vector3(1, 0, 0));
+        this.cushion5 = new TableCushion("cushion5", cushionGeometry, material, Table.TABLE_LENGTH, new THREE.Vector3(0, 0, 1));
+        this.cushion6 = new TableCushion("cushion6", cushionGeometry, material, Table.TABLE_LENGTH, new THREE.Vector3(0, 0, 1));
         this.cushion1.rotateY(Math.PI / 2);
         this.cushion4.rotateY(Math.PI / 2);
         this.cushion1.position.setX(Table.TABLE_WIDTH);
@@ -21,9 +21,9 @@ class Table extends THREE.Group {
         this.cushion2.position.setZ(Table.TABLE_WIDTH / 2);
         this.cushion3.position.setX(-Table.TABLE_WIDTH / 2);
         this.cushion3.position.setZ(Table.TABLE_WIDTH / 2);
-        this.cushion5.position.setX(Table.TABLE_WIDTH / 2);
+        this.cushion5.position.setX(-Table.TABLE_WIDTH / 2);
         this.cushion5.position.setZ(-Table.TABLE_WIDTH / 2);
-        this.cushion6.position.setX(-Table.TABLE_WIDTH / 2);
+        this.cushion6.position.setX(Table.TABLE_WIDTH / 2);
         this.cushion6.position.setZ(-Table.TABLE_WIDTH / 2);
         this.cushion1.geometry.computeBoundingBox();
         this.cushion2.geometry.computeBoundingBox();
@@ -38,12 +38,6 @@ class Table extends THREE.Group {
         this.add(this.cushion4);
         this.add(this.cushion5);
         this.add(this.cushion6);
-        this.add(new THREE.BoxHelper(this.cushion1, 0xffff00));
-        this.add(new THREE.BoxHelper(this.cushion2, 0xffff00));
-        this.add(new THREE.BoxHelper(this.cushion3, 0xffff00));
-        this.add(new THREE.BoxHelper(this.cushion4, 0xffff00));
-        this.add(new THREE.BoxHelper(this.cushion5, 0xffff00));
-        this.add(new THREE.BoxHelper(this.cushion6, 0xffff00));
     }
     checkCollisionWithCushion(ball) {
         const ballBB = ball.geometry.boundingBox.clone();
@@ -75,24 +69,31 @@ class Table extends THREE.Group {
             this.handleCollision(this.cushion2, ball, impulse);
         }
         if (cushion3BB.intersectsBox(ballBB)) {
-            this.handleCollision(this.cushion1, ball, impulse);
+            this.handleCollision(this.cushion3, ball, impulse);
         }
         if (cushion4BB.intersectsBox(ballBB)) {
-            this.handleCollision(this.cushion1, ball, impulse);
+            this.handleCollision(this.cushion4, ball, impulse);
         }
         if (cushion5BB.intersectsBox(ballBB)) {
-            this.handleCollision(this.cushion1, ball, impulse);
+            this.handleCollision(this.cushion5, ball, impulse);
         }
         if (cushion6BB.intersectsBox(ballBB)) {
-            this.handleCollision(this.cushion1, ball, impulse);
+            this.handleCollision(this.cushion6, ball, impulse);
         }
     }
     handleCollision(cushion, ball, impulse) {
-        const magImpulseOnNormal = impulse.dot(this.cushion1.getSurfaceNormal());
-        const impulseOnBall = this.cushion1
+        const magImpulseOnNormal = Math.abs(impulse.dot(this.cushion1.getSurfaceNormal()));
+        const impulseOnBall = cushion
             .getSurfaceNormal()
             .clone()
             .multiplyScalar(magImpulseOnNormal);
+        ball.goBack();
+        console.log(cushion.name + " Applying impulse " +
+            impulseOnBall.x +
+            " " +
+            impulseOnBall.y +
+            " " +
+            impulseOnBall.z);
         ball.applyImpulse(impulseOnBall);
     }
 }
