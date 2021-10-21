@@ -15,7 +15,11 @@ class SceneManager {
 		//
 		this.createTable(scene, new THREE.Vector3(0, -0.1, 0));
 		this.addBall(scene, new THREE.Vector3(0, 0, 0), new THREE.Vector3(2, 0, 0));
-		this.addBall(scene, new THREE.Vector3(Table.TABLE_WIDTH/4, 0, 0), new THREE.Vector3(0, 0, 0));
+		this.addBall(
+			scene,
+			new THREE.Vector3(Table.TABLE_WIDTH / 4, 0, 0),
+			new THREE.Vector3(0, 0, 0)
+		);
 	}
 
 	addBall(
@@ -65,7 +69,7 @@ class SceneManager {
 					const ball2Mass = ball2.getMass();
 					const impulse = ball1Vel
 						.sub(ball2Vel)
-						.multiplyScalar(-1 * (1 + SceneManager.ELASTICITY_BALL_BALL))
+						.multiplyScalar((1 + SceneManager.ELASTICITY_BALL_BALL))
 						.multiplyScalar((ball1Mass * ball2Mass) / (ball1Mass + ball2Mass));
 
 					console.log(
@@ -74,11 +78,13 @@ class SceneManager {
 					const vecB1ToB2 = ball2
 						.getPosition()
 						.clone()
-						.sub(ball1.getPosition());
+						.sub(ball1.getPosition())
+						.normalize();
 					const vecB2ToB1 = ball1
 						.getPosition()
 						.clone()
-						.sub(ball2.getPosition());
+						.sub(ball2.getPosition())
+						.normalize();
 
 					const magImpulseOnNormal = Math.abs(impulse.dot(vecB2ToB1));
 					const impulseOnB1 = vecB2ToB1
@@ -88,6 +94,8 @@ class SceneManager {
 						.normalize()
 						.multiplyScalar(magImpulseOnNormal);
 
+					ball1.goBack();
+					ball2.goBack();
 					// apply the impulse
 					ball1.applyImpulse(impulseOnB1);
 					ball2.applyImpulse(impulseOnB2);
