@@ -17,15 +17,17 @@ class Ball extends THREE.Mesh {
 
 	constructor() {
 		const geometry_ball = new THREE.SphereGeometry(Ball.BALL_RADIUS, 32, 32);
-		const material_ball = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+		const material_ball = new THREE.MeshBasicMaterial({ color: Math.random() * 0xffffff });
 
 		super(geometry_ball, material_ball);
 		this.lastTime = 0;
-		this.velocity = new THREE.Vector3(1, 0, 1);
+		this.velocity = new THREE.Vector3(0, 0, 0);
 		this.acceleration = new THREE.Vector3(0, 0, 0);
 		this.impulsiveAcceleration = new THREE.Vector3(0, 0, 0);
 		this.forceOnBall = new THREE.Vector3(0, 0, 0);
 		this.mass = 1;
+
+		this.geometry.computeBoundingBox();
 	}
 
 	setPosition(pos: THREE.Vector3) {
@@ -107,10 +109,9 @@ class Ball extends THREE.Mesh {
 	}
 
 	goBack(): void {
-		debugger;
 		// add displacement due to velocity
 		this.position.add(
-			this.velocity.clone().multiplyScalar(-10 * this.lastDeltaT)
+			this.velocity.clone().multiplyScalar(-2 * this.lastDeltaT)
 		);
 		// add displacement due to acceleration
 		this.position.add(
