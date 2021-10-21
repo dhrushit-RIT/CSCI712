@@ -40,6 +40,7 @@ scene.add( axesHelper );
 const canvas = renderer.domElement;
 let endTimeFactor = 1;
 function animate() {
+
 	let handle = requestAnimationFrame(animate);
 	sceneManager.myUpdate(clock.getElapsedTime());
 	renderer.render(scene, camera);
