@@ -10,32 +10,26 @@ class SceneManager {
 	constructor(scene: THREE.Scene) {
 		this.scene = scene;
 
-		this.table = this.createTable();
-		const ball = new Ball();
-		this.balls.push(ball);
-
 		//
 		// add things to scene
 		//
-		scene.add(this.table);
-		for (let ball of this.balls) {
-			scene.add(ball);
-		}
-
-		// set the table initial position
-		this.table.position.x = 0;
-		this.table.position.y = -0.1;
-		this.table.position.z = 0;
-
-		// set the ball initial position
-		ball.position.x = 0; // -Table.TABLE_LENGTH / 2;
-		ball.position.y = 0;
-		ball.position.z = 0;
-
-		scene.add(new THREE.BoxHelper(ball));
+		this.createTable(scene, new THREE.Vector3(0, -0.1, 0));
+		this.addBall(scene, new THREE.Vector3(0, 0, 0), new THREE.Vector3(2, 0, 2));
 	}
 
-	createTable(): Table {
+	addBall(
+		scene: THREE.Scene,
+		initPos: THREE.Vector3,
+		initVel: THREE.Vector3
+	): void {
+		const ball = new Ball();
+		ball.position.set(initPos.x, initPos.y, initPos.z);
+		ball.setVelocity(initVel);
+		scene.add(ball);
+		this.balls.push(ball);
+	}
+
+	createTable(scene: THREE.Scene, initPos: THREE.Vector3): void {
 		const materials: THREE.MeshBasicMaterial[] = [
 			new THREE.MeshBasicMaterial({ color: 0xff0000 }),
 			new THREE.MeshBasicMaterial({ color: 0x00ff00 }),
@@ -44,21 +38,24 @@ class SceneManager {
 			new THREE.MeshBasicMaterial({ color: 0xffff00 }),
 			new THREE.MeshBasicMaterial({ color: 0x00ffff }),
 		];
-		return new Table(materials);
+
+		this.table = new Table(materials);
+		this.table.position.set(initPos.x, initPos.y, initPos.z);
+		scene.add(this.table);
 	}
 
-	detectBallsCollision(): Boolean {
+	detectBallsCollision(): void {
 		for (let i = 0; i < this.balls.length; i++) {
 			for (let j = i + 1; j < this.balls.length; j++) {
 				const ball1 = this.balls[i];
 				const ball2 = this.balls[j];
 
-				// ball1.geometry.computeBoundingBox();
-				// ball2.geometry.computeBoundingBox();
+				const ball1BB = this.balls[i].geometry.boundingBox.clone();
+				const ball2BB = this.balls[j].geometry.boundingBox.clone();
 
-				const ball1BB = this.balls[i].geometry.boundingBox;
-				const ball2BB = this.balls[j].geometry.boundingBox;
-				if (ball1BB.intersectsBox(ball2BB)) {
+				const ball1BBWorld = ball1BB.applyMatrix4(ball1.matrixWorld);
+				const ball2BBWorld = ball2BB.applyMatrix4(ball2.matrixWorld);
+				if (ball1BBWorld.intersectsBox(ball2BBWorld)) {
 					// calculate the impulse forces on each ball
 					// J = (-(v1 - v2)_before * (e + 1)) / (1/m1 + 1/m2)
 					const ball1Vel = ball1.getVelocity().clone();
@@ -70,6 +67,9 @@ class SceneManager {
 						.multiplyScalar(-1 * (1 + SceneManager.ELASTICITY_BALL_BALL))
 						.multiplyScalar((ball1Mass * ball2Mass) / (ball1Mass + ball2Mass));
 
+					console.log(
+						"impulse " + impulse.x + " " + impulse.y + " " + impulse.z
+					);
 					const vecB1ToB2 = ball2
 						.getPosition()
 						.clone()
@@ -79,7 +79,7 @@ class SceneManager {
 						.clone()
 						.sub(ball2.getPosition());
 
-					const magImpulseOnNormal = impulse.dot(vecB2ToB1);
+					const magImpulseOnNormal = Math.abs(impulse.dot(vecB2ToB1));
 					const impulseOnB1 = vecB2ToB1
 						.normalize()
 						.multiplyScalar(magImpulseOnNormal);
@@ -87,30 +87,41 @@ class SceneManager {
 						.normalize()
 						.multiplyScalar(magImpulseOnNormal);
 
+					// apply the impulse
 					ball1.applyImpulse(impulseOnB1);
 					ball2.applyImpulse(impulseOnB2);
-
-					// apply the impulse
-
-					return true;
+					console.log(
+						"impulse on ball 1 " +
+							impulseOnB1.x +
+							" " +
+							impulseOnB1.y +
+							" " +
+							impulseOnB1.z
+					);
+					console.log(
+						"impulse on ball 2 " +
+							impulseOnB2.x +
+							" " +
+							impulseOnB2.y +
+							" " +
+							impulseOnB2.z
+					);
 				}
 			}
 		}
-		return false;
 	}
 
-	detectBallCushionCollision(): Boolean {
+	detectBallCushionCollision(): void {
 		for (let ball of this.balls) {
 			// ball.geometry.computeBoundingBox();
 
 			this.table.checkCollisionWithCushion(ball);
 		}
-
-		return false;
 	}
 
-	detectCollision(): Boolean {
-		return this.detectBallsCollision() || this.detectBallCushionCollision();
+	detectCollision(): void {
+		this.detectBallCushionCollision();
+		this.detectBallsCollision();
 	}
 
 	handleCollision(collidingObjects: THREE.Mesh[]) {}
@@ -118,7 +129,6 @@ class SceneManager {
 	myUpdate(elapsedTime: number) {
 		for (let ball of this.balls) {
 			ball.myUpdate(elapsedTime);
-			// ball.geometry.computeBoundingBox();
 		}
 
 		this.detectCollision();
