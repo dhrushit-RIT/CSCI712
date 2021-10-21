@@ -14,7 +14,8 @@ class SceneManager {
 		// add things to scene
 		//
 		this.createTable(scene, new THREE.Vector3(0, -0.1, 0));
-		this.addBall(scene, new THREE.Vector3(0, 0, 0), new THREE.Vector3(2, 0, 2));
+		this.addBall(scene, new THREE.Vector3(0, 0, 0), new THREE.Vector3(2, 0, 0));
+		this.addBall(scene, new THREE.Vector3(Table.TABLE_WIDTH/4, 0, 0), new THREE.Vector3(0, 0, 0));
 	}
 
 	addBall(
