@@ -43,32 +43,38 @@ class Table extends THREE.Group {
 		this.cushion1 = new TableCushion(
 			cushionGeometry,
 			material,
-			Table.TABLE_WIDTH
+			Table.TABLE_WIDTH,
+			new THREE.Vector3(-1, 0, 0)
 		);
 		this.cushion2 = new TableCushion(
 			cushionGeometry,
 			material,
-			Table.TABLE_LENGTH
+			Table.TABLE_LENGTH,
+			new THREE.Vector3(0, 0, -1)
 		);
 		this.cushion3 = new TableCushion(
 			cushionGeometry,
 			material,
-			Table.TABLE_WIDTH
+			Table.TABLE_WIDTH,
+			new THREE.Vector3(0, 0, -1)
 		);
 		this.cushion4 = new TableCushion(
 			cushionGeometry,
 			material,
-			Table.TABLE_LENGTH
+			Table.TABLE_LENGTH,
+			new THREE.Vector3(1, 0, 0)
 		);
 		this.cushion5 = new TableCushion(
 			cushionGeometry,
 			material,
-			Table.TABLE_LENGTH
+			Table.TABLE_LENGTH,
+			new THREE.Vector3(0, 0, 1)
 		);
 		this.cushion6 = new TableCushion(
 			cushionGeometry,
 			material,
-			Table.TABLE_LENGTH
+			Table.TABLE_LENGTH,
+			new THREE.Vector3(0, 0, 1)
 		);
 
 		// this.cushion1.position.set(2, 2, 2);
@@ -110,8 +116,9 @@ class Table extends THREE.Group {
 		this.add(new THREE.BoxHelper(this.cushion6, 0xffff00));
 	}
 
-	checkCollisionWithCushion(objectBoundingBox: THREE.Box3): Boolean {
-		let colliding = false;
+	checkCollisionWithCushion(ball: Ball): void {
+		const ballBB = ball.geometry.boundingBox.clone();
+		ballBB.applyMatrix4(ball.matrixWorld);
 
 		let cushion1BB = this.cushion1.geometry.boundingBox.clone();
 		let cushion2BB = this.cushion2.geometry.boundingBox.clone();
@@ -127,13 +134,47 @@ class Table extends THREE.Group {
 		cushion5BB.applyMatrix4(this.cushion5.matrixWorld);
 		cushion6BB.applyMatrix4(this.cushion6.matrixWorld);
 
-		colliding = colliding || cushion1BB.intersectsBox(objectBoundingBox);
-		colliding = colliding || cushion2BB.intersectsBox(objectBoundingBox);
-		colliding = colliding || cushion3BB.intersectsBox(objectBoundingBox);
-		colliding = colliding || cushion4BB.intersectsBox(objectBoundingBox);
-		colliding = colliding || cushion5BB.intersectsBox(objectBoundingBox);
-		colliding = colliding || cushion6BB.intersectsBox(objectBoundingBox);
+		const ballVel = ball.getVelocity().clone();
+		if (isNaN(ballVel.x)) {
+			debugger;
+		}
+		const ballMass = ball.getMass();
+		const impulse = ballVel
+			.multiplyScalar(-1 * (1 + SceneManager.ELASTICITY_BALL_CUSHION))
+			.multiplyScalar(ballMass);
 
-		return colliding;
+		if (cushion1BB.intersectsBox(ballBB)) {
+			this.handleCollision(this.cushion1, ball, impulse);
+		}
+
+		if (cushion2BB.intersectsBox(ballBB)) {
+			this.handleCollision(this.cushion2, ball, impulse);
+		}
+
+		if (cushion3BB.intersectsBox(ballBB)) {
+			this.handleCollision(this.cushion1, ball, impulse);
+		}
+
+		if (cushion4BB.intersectsBox(ballBB)) {
+			this.handleCollision(this.cushion1, ball, impulse);
+		}
+
+		if (cushion5BB.intersectsBox(ballBB)) {
+			this.handleCollision(this.cushion1, ball, impulse);
+		}
+
+		if (cushion6BB.intersectsBox(ballBB)) {
+			this.handleCollision(this.cushion1, ball, impulse);
+		}
+	}
+
+	handleCollision(cushion: TableCushion, ball: Ball, impulse: THREE.Vector3) {
+		const magImpulseOnNormal = impulse.dot(this.cushion1.getSurfaceNormal());
+		const impulseOnBall = this.cushion1
+			.getSurfaceNormal()
+			.clone()
+			.multiplyScalar(magImpulseOnNormal);
+		// ball.goBack();
+		ball.applyImpulse(impulseOnBall);
 	}
 }

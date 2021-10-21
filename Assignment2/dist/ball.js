@@ -1,12 +1,76 @@
 class Ball extends THREE.Mesh {
-    constructor(radius) {
-        const geometry_ball = new THREE.SphereGeometry(Ball.BALL_DIM_FT, 32, 32);
+    constructor() {
+        const geometry_ball = new THREE.SphereGeometry(Ball.BALL_RADIUS, 32, 32);
         const material_ball = new THREE.MeshBasicMaterial({ color: 0xffff00 });
         super(geometry_ball, material_ball);
-        this.radius = radius;
+        this.lastTime = 0;
+        this.velocity = new THREE.Vector3(1, 0, 1);
+        this.acceleration = new THREE.Vector3(0, 0, 0);
+        this.impulsiveAcceleration = new THREE.Vector3(0, 0, 0);
+        this.forceOnBall = new THREE.Vector3(0, 0, 0);
+        this.mass = 1;
     }
-    myUpdate() { }
-    exertForce() { }
+    setPosition(pos) {
+        this.position.set(pos.x, pos.y, pos.z);
+    }
+    setVelocity(vel) {
+        this.velocity.set(vel.x, vel.y, vel.z);
+    }
+    setAcceleration(acc) {
+        this.acceleration.set(acc.x, acc.y, acc.z);
+    }
+    getPosition() {
+        return this.position;
+    }
+    getVelocity() {
+        return this.velocity;
+    }
+    getAcceleration() {
+        return this.acceleration;
+    }
+    getMass() {
+        return this.mass;
+    }
+    myUpdate(time) {
+        this.updateMatrix();
+        this.updateMatrixWorld(true);
+        const deltaT = time - this.lastTime;
+        this.updatePosition(deltaT);
+        this.updateVelocity(deltaT);
+        this.lastTime = time;
+        this.lastDeltaT = deltaT;
+    }
+    updatePosition(deltaT) {
+        this.position.add(this.velocity.clone().multiplyScalar(deltaT));
+        this.position.add(this.acceleration.clone().multiplyScalar(0.5 * deltaT * deltaT));
+    }
+    updateVelocity(deltaT) {
+        this.velocity.add(this.acceleration.clone().multiplyScalar(deltaT));
+    }
+    updateAcceleration() {
+        this.acceleration.add(this.forceOnBall.clone().multiplyScalar(1 / this.mass));
+    }
+    applyForce(force) {
+        this.forceOnBall = force;
+        this.updateAcceleration();
+        this.forceOnBall.set(0, 0, 0);
+    }
+    applyImpulse(impulse) {
+        this.velocity.add(impulse.multiplyScalar(1 / this.mass));
+        console.log("velocity after impulse " +
+            this.velocity.x +
+            " " +
+            this.velocity.y +
+            " " +
+            this.velocity.z);
+    }
+    goBack() {
+        debugger;
+        this.position.add(this.velocity.clone().multiplyScalar(-10 * this.lastDeltaT));
+        this.position.add(this.acceleration
+            .clone()
+            .multiplyScalar(0.5 * this.lastDeltaT * this.lastDeltaT));
+    }
 }
-Ball.BALL_DIM_FT = 1;
+Ball.BALL_RADIUS = 0.0859375;
 //# sourceMappingURL=Ball.js.map

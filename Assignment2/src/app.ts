@@ -15,7 +15,6 @@ let fieldOfView = 45,
 const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 1000);
 document.body.appendChild(renderer.domElement);
 
-const BALL_DIM_FT = 0.0859375;
 
 const material = new THREE.MeshBasicMaterial({
 	vertexColors: false,
@@ -32,6 +31,9 @@ scene.add(camera);
 
 const clock = new THREE.Clock();
 
+const axesHelper = new THREE.AxesHelper( 5 );
+scene.add( axesHelper );
+
 //
 // render
 //
@@ -40,7 +42,8 @@ let endTimeFactor = 1;
 function animate() {
 
 	let handle = requestAnimationFrame(animate);
-	sceneManager.myUpdate();
+	sceneManager.myUpdate(clock.getElapsedTime());
 	renderer.render(scene, camera);
 }
+
 animate();
