@@ -13,7 +13,7 @@ class SceneManager {
 
 	static MIN_DELTA_T = 0.016;
 
-	private simulate = true;
+	private simulate = false;
 
 	private u = 0;
 
