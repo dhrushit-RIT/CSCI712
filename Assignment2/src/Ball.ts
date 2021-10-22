@@ -15,8 +15,14 @@ class Ball extends THREE.Mesh {
 	static BALL_RADIUS = 0.0859375;
 	private lastDeltaT: number;
 	private weight: number;
+	private ballname: string;
+	private ignoreImpulse: Boolean;
+	private ignoreCount: number;
+	private static IGNORE_COUNT_MAX = 3;
 
-	constructor() {
+	private collisionHandled: boolean;
+
+	constructor(ballname: string) {
 		const geometry_ball = new THREE.SphereGeometry(Ball.BALL_RADIUS, 32, 32);
 		const material_ball = new THREE.MeshBasicMaterial({
 			color: Math.random() * 0xffffff,
@@ -31,8 +37,15 @@ class Ball extends THREE.Mesh {
 		this.mass = 1;
 		this.weight = this.mass * SceneManager.GRAVITY;
 		this.lastDeltaT = SceneManager.MIN_DELTA_T;
-
+		this.collisionHandled = true;
 		this.geometry.computeBoundingBox();
+		this.ballname = ballname;
+		this.ignoreImpulse = false;
+		this.ignoreCount = 0;
+	}
+
+	getBallName(): string {
+		return this.ballname;
 	}
 
 	setPosition(pos: THREE.Vector3) {
@@ -78,6 +91,16 @@ class Ball extends THREE.Mesh {
 
 		this.lastTime = time;
 		this.lastDeltaT = deltaT;
+
+		console.log(
+			this.ballname +
+				" " +
+				this.velocity.x +
+				" " +
+				this.velocity.y +
+				" " +
+				this.velocity.z
+		);
 	}
 
 	updatePosition(deltaT: number) {
@@ -87,6 +110,16 @@ class Ball extends THREE.Mesh {
 		this.position.add(
 			this.acceleration.clone().multiplyScalar(0.5 * deltaT * deltaT)
 		);
+
+		if (!this.collisionHandled) {
+			// add displacement due to velocity
+			this.position.add(this.velocity.clone().multiplyScalar(deltaT));
+			// add displacement due to acceleration
+			this.position.add(
+				this.acceleration.clone().multiplyScalar(0.5 * deltaT * deltaT)
+			);
+			this.collisionHandled = true;
+		}
 	}
 
 	updateVelocity(deltaT: number) {
@@ -111,28 +144,35 @@ class Ball extends THREE.Mesh {
 	}
 
 	applyImpulse(impulse: THREE.Vector3) {
-		this.velocity.add(impulse.multiplyScalar(1 / this.mass));
-		console.log(
-			"velocity after impulse " +
-				this.velocity.x +
-				" " +
-				this.velocity.y +
-				" " +
-				this.velocity.z
-		);
+		if (this.ignoreImpulse) {
+			this.ignoreCount += 1;
+
+			if (this.ignoreCount > Ball.IGNORE_COUNT_MAX) {
+				this.ignoreImpulse = false;
+				this.ignoreCount = 0;
+			}
+		}
+		if (!this.ignoreImpulse) {
+			this.collisionHandled = false;
+			this.velocity.add(impulse.multiplyScalar(1 / this.mass));
+		}
+		// console.log(
+		// 	"velocity after impulse " +
+		// 		this.velocity.x +
+		// 		" " +
+		// 		this.velocity.y +
+		// 		" " +
+		// 		this.velocity.z
+		// );
 	}
 
-	goBack(): void {
+	goBack(deltaT?: number): void {
 		// add displacement due to velocity
-		this.position.add(
-			this.velocity.clone().multiplyScalar(-2 * this.lastDeltaT)
-		);
+
+		const dt = deltaT || this.lastDeltaT;
+		this.position.add(this.velocity.clone().multiplyScalar(-2 * dt));
 		// add displacement due to acceleration
-		this.position.add(
-			this.acceleration
-				.clone()
-				.multiplyScalar(0.5 * this.lastDeltaT * this.lastDeltaT)
-		);
+		this.position.add(this.acceleration.clone().multiplyScalar(0.5 * dt * dt));
 	}
 
 	applyFriction(): void {
@@ -142,7 +182,7 @@ class Ball extends THREE.Mesh {
 			.clone()
 			.normalize()
 			.multiplyScalar(-1);
-		const frictionalAcceleration = frictionalAccelerationDir.multiplyScalar(
+		const frictionalAcceleration = frictionalAccelerationDir.setLength(
 			frictionalAccelerationMag
 		);
 		const deltaTForZeroVelocity =

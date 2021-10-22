@@ -141,9 +141,9 @@ class Table extends THREE.Group {
 		cushion6BB.applyMatrix4(this.cushion6.matrixWorld);
 
 		const ballVel = ball.getVelocity().clone();
-		if (isNaN(ballVel.x)) {
-			debugger;
-		}
+		// if (isNaN(ballVel.x)) {
+		// 	debugger;
+		// }
 		const ballMass = ball.getMass();
 		const impulse = ballVel
 			.multiplyScalar(-1 * (1 + SceneManager.ELASTICITY_BALL_CUSHION))
@@ -175,22 +175,23 @@ class Table extends THREE.Group {
 	}
 
 	handleCollision(cushion: TableCushion, ball: Ball, impulse: THREE.Vector3) {
+		SceneManager.collisionTracker[ball.getBallName()].add(cushion);
 		const magImpulseOnNormal = Math.abs(
 			impulse.dot(this.cushion1.getSurfaceNormal())
 		);
 		const impulseOnBall = cushion
 			.getSurfaceNormal()
 			.clone()
-			.multiplyScalar(magImpulseOnNormal);
+			.setLength(magImpulseOnNormal);
 		ball.goBack();
-		console.log(
-			cushion.name + " Applying impulse " +
-				impulseOnBall.x +
-				" " +
-				impulseOnBall.y +
-				" " +
-				impulseOnBall.z
-		);
+		// console.log(
+		// 	cushion.name + " Applying impulse " +
+		// 		impulseOnBall.x +
+		// 		" " +
+		// 		impulseOnBall.y +
+		// 		" " +
+		// 		impulseOnBall.z
+		// );
 		ball.applyImpulse(impulseOnBall);
 	}
 }
