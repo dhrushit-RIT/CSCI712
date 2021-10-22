@@ -1,13 +1,20 @@
 class SceneManager {
     constructor(scene) {
         this.balls = [];
+        this.simulate = false;
+        this.u = 0;
         this.scene = scene;
         this.createTable(scene, new THREE.Vector3(0, -0.1, 0));
-        this.addBall(scene, new THREE.Vector3(0, 0, 0), new THREE.Vector3(2, 0, 0));
-        this.addBall(scene, new THREE.Vector3(Table.TABLE_WIDTH / 4, 0, 0), new THREE.Vector3(0, 0, 0));
+        this.addBall("ball0", scene, new THREE.Vector3(0, 0, 0), new THREE.Vector3(6, 0, 0));
+        this.addBall("ball1", scene, new THREE.Vector3(Table.TABLE_WIDTH / 4, 0, 0), new THREE.Vector3(0, 0, 0));
+        this.addBall("ball2", scene, new THREE.Vector3(Table.TABLE_WIDTH / 4 + Ball.BALL_RADIUS * 1.414, 0, Ball.BALL_RADIUS * 1.414), new THREE.Vector3(0, 0, 0));
+        this.addBall("ball3", scene, new THREE.Vector3(Table.TABLE_WIDTH / 4 + Ball.BALL_RADIUS * 1.414, 0, -Ball.BALL_RADIUS * 1.414), new THREE.Vector3(0, 0, 0));
+        for (let ball of this.balls) {
+            SceneManager.collisionTracker[ball.getBallName()] = new Set();
+        }
     }
-    addBall(scene, initPos, initVel) {
-        const ball = new Ball();
+    addBall(name, scene, initPos, initVel) {
+        const ball = new Ball(name);
         ball.position.set(initPos.x, initPos.y, initPos.z);
         ball.setVelocity(initVel);
         scene.add(ball);
@@ -44,7 +51,6 @@ class SceneManager {
                         .sub(ball2Vel)
                         .multiplyScalar(1 + SceneManager.ELASTICITY_BALL_BALL)
                         .multiplyScalar((ball1Mass * ball2Mass) / (ball1Mass + ball2Mass));
-                    console.log("impulse " + impulse.x + " " + impulse.y + " " + impulse.z);
                     const vecB1ToB2 = ball2
                         .getPosition()
                         .clone()
@@ -56,28 +62,21 @@ class SceneManager {
                         .sub(ball2.getPosition())
                         .normalize();
                     const magImpulseOnNormal = Math.abs(impulse.dot(vecB2ToB1));
+                    console.log(ball1.getBallName() +
+                        " collided " +
+                        ball2.getBallName() +
+                        " impulse along normal " +
+                        magImpulseOnNormal);
                     const impulseOnB1 = vecB2ToB1
                         .normalize()
-                        .multiplyScalar(magImpulseOnNormal);
+                        .setLength(magImpulseOnNormal);
                     const impulseOnB2 = vecB1ToB2
                         .normalize()
-                        .multiplyScalar(magImpulseOnNormal);
+                        .setLength(magImpulseOnNormal);
                     ball1.goBack();
                     ball2.goBack();
                     ball1.applyImpulse(impulseOnB1);
                     ball2.applyImpulse(impulseOnB2);
-                    console.log("impulse on ball 1 " +
-                        impulseOnB1.x +
-                        " " +
-                        impulseOnB1.y +
-                        " " +
-                        impulseOnB1.z);
-                    console.log("impulse on ball 2 " +
-                        impulseOnB2.x +
-                        " " +
-                        impulseOnB2.y +
-                        " " +
-                        impulseOnB2.z);
                 }
             }
         }
@@ -97,18 +96,33 @@ class SceneManager {
             ball.applyFriction();
         }
     }
+    printTracker() {
+        for (let key in SceneManager.collisionTracker) {
+            console.log(SceneManager.collisionTracker[key]);
+        }
+        SceneManager.collisionTracker = {};
+        for (let ball of this.balls) {
+            SceneManager.collisionTracker[ball.getBallName()] = new Set();
+        }
+    }
     myUpdate(elapsedTime) {
         this.applyFriction();
+        if (this.simulate) {
+            elapsedTime = this.u;
+            this.u += SceneManager.MIN_DELTA_T / 2;
+        }
         for (let ball of this.balls) {
             ball.myUpdate(elapsedTime);
         }
         this.detectCollision();
+        console.log("collision tracker");
     }
 }
 SceneManager.BALL_DIM_FT = 0.0859375;
 SceneManager.ELASTICITY_BALL_BALL = 1;
-SceneManager.ELASTICITY_BALL_CUSHION = 1;
+SceneManager.ELASTICITY_BALL_CUSHION = 0.9;
 SceneManager.COEFF_FRIC_BALL_SURFACE = 0.1;
 SceneManager.GRAVITY = 9.8;
 SceneManager.MIN_DELTA_T = 0.016;
+SceneManager.collisionTracker = {};
 //# sourceMappingURL=SceneManager.js.map
