@@ -1,10 +1,10 @@
 // init scene
 const scene = new THREE.Scene();
-
+const cnv = document.getElementById("c");
 // init renderer
-const side = window.innerWidth / 3;
-const renderer = new THREE.WebGLRenderer();
-renderer.setSize(side, side);
+const side = window.innerWidth;
+const renderer = new THREE.WebGLRenderer({canvas: cnv});
+// renderer.setSize(side, side);
 
 // set up camera
 let fieldOfView = 45,
@@ -24,7 +24,7 @@ const material = new THREE.MeshBasicMaterial({
 const sceneManager = new SceneManager(scene);
 
 // set up camera
-camera.position.set(7, 7, -7);
+camera.position.set(7, 7, 0);
 camera.lookAt(0, 0, 0);
 
 scene.add(camera);
@@ -37,7 +37,7 @@ scene.add( axesHelper );
 //
 // render
 //
-const canvas = renderer.domElement;
+// const canvas = renderer.domElement;
 let endTimeFactor = 1;
 function animate() {
 
