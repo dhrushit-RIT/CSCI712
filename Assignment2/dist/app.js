@@ -13,7 +13,7 @@ camera.position.set(7, 7, 0);
 camera.lookAt(0, 0, 0);
 scene.add(camera);
 const clock = new THREE.Clock();
-const axesHelper = new THREE.AxesHelper(5);
+const axesHelper = new THREE.AxesHelper(2);
 scene.add(axesHelper);
 let endTimeFactor = 1;
 function animate() {

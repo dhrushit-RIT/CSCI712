@@ -31,7 +31,7 @@ scene.add(camera);
 
 const clock = new THREE.Clock();
 
-const axesHelper = new THREE.AxesHelper( 5 );
+const axesHelper = new THREE.AxesHelper( 2 );
 scene.add( axesHelper );
 
 //

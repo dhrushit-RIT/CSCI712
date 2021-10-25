@@ -13,7 +13,7 @@ class SceneManager {
 
 	static MIN_DELTA_T = 0.016;
 
-	private simulate = false;
+	private simulate = true;
 
 	private u = 0;
 
@@ -30,7 +30,7 @@ class SceneManager {
 			"ball0",
 			scene,
 			new THREE.Vector3(0, 0, 0),
-			new THREE.Vector3(6, 0, 0)
+			new THREE.Vector3(4, 0, 0)
 		);
 		this.addBall(
 			"ball1",
@@ -98,12 +98,15 @@ class SceneManager {
 				const ball1 = this.balls[i];
 				const ball2 = this.balls[j];
 
-				const ball1BB = this.balls[i].geometry.boundingBox.clone();
-				const ball2BB = this.balls[j].geometry.boundingBox.clone();
+				const ball1BB = this.balls[i].geometry.boundingSphere.clone();
+				const ball2BB = this.balls[j].geometry.boundingSphere.clone();
+				// let ball1BB = this.balls[i].geometry.boundingBox.clone();
+				// let ball2BB = this.balls[j].geometry.boundingBox.clone();
 
-				const ball1BBWorld = ball1BB.applyMatrix4(ball1.matrixWorld);
-				const ball2BBWorld = ball2BB.applyMatrix4(ball2.matrixWorld);
-				if (ball1BBWorld.intersectsBox(ball2BBWorld)) {
+				let ball1BBWorld = ball1BB.applyMatrix4(ball1.matrixWorld);
+				let ball2BBWorld = ball2BB.applyMatrix4(ball2.matrixWorld);
+				// if (ball1BBWorld.intersectsBox(ball2BBWorld)) {
+				if (ball1BBWorld.intersectsSphere(ball2BBWorld)) {
 					// SceneManager.collisionTracker[ball1.getBallName()].add(ball2);
 					// SceneManager.collisionTracker[ball2.getBallName()].add(ball1);
 					// calculate the impulse forces on each ball
@@ -148,17 +151,39 @@ class SceneManager {
 						.setLength(magImpulseOnNormal);
 
 					// while (ball1BBWorld.intersectsBox(ball2BBWorld)) {
-					// const distB1B2 = ball1.position.clone().sub(ball2.position).length();
-					// const moveDist = (2 * Ball.BALL_RADIUS - distB1B2 ) / 2;
+					const distB1B2 = ball1.position.clone().sub(ball2.position).length();
+					const moveDist = (2 * Ball.BALL_RADIUS - distB1B2);
 
-					// const B1ToB2 = ball2.position.clone().sub(ball1.position).normalize();
-					// const B2ToB1 = ball1.position.clone().sub(ball2.position).normalize();
-					// const ball1Pos = ball1.position.clone().add(B2ToB1.setLength(moveDist))
-					// const ball2Pos = ball2.position.clone().add(B1ToB2.setLength(moveDist))
-					// ball1.setPosition(ball1Pos);
-					// ball2.setPosition(ball2Pos);
-					ball1.goBack();
-					ball2.goBack();
+					const B1ToB2 = ball2.position.clone().sub(ball1.position).normalize();
+					const B2ToB1 = ball1.position.clone().sub(ball2.position).normalize();
+					const ball1Pos = ball1.position
+						.clone()
+						.add(B2ToB1.setLength(moveDist));
+					const ball2Pos = ball2.position
+						.clone()
+						.add(B1ToB2.setLength(moveDist));
+					ball1.setPosition(ball1Pos);
+					ball2.setPosition(ball2Pos);
+
+					// ball1.goBack();
+					// ball2.goBack();
+
+					// ball1BB = this.balls[i].geometry.boundingBox.clone();
+					// ball2BB = this.balls[j].geometry.boundingBox.clone();
+
+					// ball1BBWorld = ball1BB.applyMatrix4(ball1.matrixWorld);
+					// ball2BBWorld = ball2BB.applyMatrix4(ball2.matrixWorld);
+					// if (ball1BBWorld.intersectsBox(ball2BBWorld)) {
+					// 	// while (ball1BBWorld.intersectsBox(ball2BBWorld)) {
+					// 	ball1.goBack();
+					// 	// ball2.goBack();
+					// 	ball1BB = this.balls[i].geometry.boundingBox.clone();
+					// 	ball2BB = this.balls[j].geometry.boundingBox.clone();
+
+					// 	ball1BBWorld = ball1BB.applyMatrix4(ball1.matrixWorld);
+					// 	ball2BBWorld = ball2BB.applyMatrix4(ball2.matrixWorld);
+					// 	// }
+					// }
 					// }
 
 					// // set the magnitude to 0 if the v1 is has no component along v2 - v1

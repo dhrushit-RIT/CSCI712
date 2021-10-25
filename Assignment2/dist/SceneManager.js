@@ -1,11 +1,11 @@
 class SceneManager {
     constructor(scene) {
         this.balls = [];
-        this.simulate = false;
+        this.simulate = true;
         this.u = 0;
         this.scene = scene;
         this.createTable(scene, new THREE.Vector3(0, -0.1, 0));
-        this.addBall("ball0", scene, new THREE.Vector3(0, 0, 0), new THREE.Vector3(6, 0, 0));
+        this.addBall("ball0", scene, new THREE.Vector3(0, 0, 0), new THREE.Vector3(4, 0, 0));
         this.addBall("ball1", scene, new THREE.Vector3(Table.TABLE_WIDTH / 4, 0, 0), new THREE.Vector3(0, 0, 0));
         this.addBall("ball2", scene, new THREE.Vector3(Table.TABLE_WIDTH / 4 + Ball.BALL_RADIUS * 1.414, 0, Ball.BALL_RADIUS * 1.414), new THREE.Vector3(0, 0, 0));
         this.addBall("ball3", scene, new THREE.Vector3(Table.TABLE_WIDTH / 4 + Ball.BALL_RADIUS * 1.414, 0, -Ball.BALL_RADIUS * 1.414), new THREE.Vector3(0, 0, 0));
@@ -38,11 +38,11 @@ class SceneManager {
             for (let j = i + 1; j < this.balls.length; j++) {
                 const ball1 = this.balls[i];
                 const ball2 = this.balls[j];
-                const ball1BB = this.balls[i].geometry.boundingBox.clone();
-                const ball2BB = this.balls[j].geometry.boundingBox.clone();
-                const ball1BBWorld = ball1BB.applyMatrix4(ball1.matrixWorld);
-                const ball2BBWorld = ball2BB.applyMatrix4(ball2.matrixWorld);
-                if (ball1BBWorld.intersectsBox(ball2BBWorld)) {
+                const ball1BB = this.balls[i].geometry.boundingSphere.clone();
+                const ball2BB = this.balls[j].geometry.boundingSphere.clone();
+                let ball1BBWorld = ball1BB.applyMatrix4(ball1.matrixWorld);
+                let ball2BBWorld = ball2BB.applyMatrix4(ball2.matrixWorld);
+                if (ball1BBWorld.intersectsSphere(ball2BBWorld)) {
                     const ball1Vel = ball1.getVelocity().clone();
                     const ball2Vel = ball2.getVelocity().clone();
                     const ball1Mass = ball1.getMass();
@@ -73,8 +73,18 @@ class SceneManager {
                     const impulseOnB2 = vecB1ToB2
                         .normalize()
                         .setLength(magImpulseOnNormal);
-                    ball1.goBack();
-                    ball2.goBack();
+                    const distB1B2 = ball1.position.clone().sub(ball2.position).length();
+                    const moveDist = (2 * Ball.BALL_RADIUS - distB1B2);
+                    const B1ToB2 = ball2.position.clone().sub(ball1.position).normalize();
+                    const B2ToB1 = ball1.position.clone().sub(ball2.position).normalize();
+                    const ball1Pos = ball1.position
+                        .clone()
+                        .add(B2ToB1.setLength(moveDist));
+                    const ball2Pos = ball2.position
+                        .clone()
+                        .add(B1ToB2.setLength(moveDist));
+                    ball1.setPosition(ball1Pos);
+                    ball2.setPosition(ball2Pos);
                     ball1.applyImpulse(impulseOnB1);
                     ball2.applyImpulse(impulseOnB2);
                 }

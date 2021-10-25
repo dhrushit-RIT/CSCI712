@@ -19,6 +19,9 @@ class Ball extends THREE.Mesh {
 	private ignoreImpulse: Boolean;
 	private ignoreCount: number;
 	private static IGNORE_COUNT_MAX = 3;
+	private previousPosition: THREE.Vector3;
+	private previousVelocity: THREE.Vector3;
+	private previousAcceleration: THREE.Vector3;
 
 	private collisionHandled: boolean;
 
@@ -31,7 +34,9 @@ class Ball extends THREE.Mesh {
 		super(geometry_ball, material_ball);
 		this.lastTime = 0;
 		this.velocity = new THREE.Vector3(0, 0, 0);
+		this.previousVelocity = new THREE.Vector3(0, 0, 0);
 		this.acceleration = new THREE.Vector3(0, 0, 0);
+		this.previousAcceleration = new THREE.Vector3(0, 0, 0);
 		this.impulsiveAcceleration = new THREE.Vector3(0, 0, 0);
 		this.forceOnBall = new THREE.Vector3(0, 0, 0);
 		this.mass = 1;
@@ -39,6 +44,7 @@ class Ball extends THREE.Mesh {
 		this.lastDeltaT = SceneManager.MIN_DELTA_T;
 		this.collisionHandled = true;
 		this.geometry.computeBoundingBox();
+		this.geometry.computeBoundingSphere();
 		this.ballname = ballname;
 		this.ignoreImpulse = false;
 		this.ignoreCount = 0;
@@ -53,6 +59,11 @@ class Ball extends THREE.Mesh {
 	}
 
 	setVelocity(vel: THREE.Vector3) {
+		this.previousVelocity.set(
+			this.velocity.x,
+			this.velocity.y,
+			this.velocity.z
+		);
 		this.velocity.set(vel.x, vel.y, vel.z);
 	}
 
@@ -104,6 +115,7 @@ class Ball extends THREE.Mesh {
 	}
 
 	updatePosition(deltaT: number) {
+		this.previousPosition = this.position.clone();
 		// add displacement due to velocity
 		this.position.add(this.velocity.clone().multiplyScalar(deltaT));
 		// add displacement due to acceleration
@@ -123,10 +135,20 @@ class Ball extends THREE.Mesh {
 	}
 
 	updateVelocity(deltaT: number) {
+		this.previousVelocity.set(
+			this.velocity.x,
+			this.velocity.y,
+			this.velocity.z
+		);
 		this.velocity.add(this.acceleration.clone().multiplyScalar(deltaT));
 	}
 
 	updateAcceleration() {
+		this.previousAcceleration.set(
+			this.acceleration.x,
+			this.acceleration.y,
+			this.acceleration.z
+		);
 		this.acceleration.add(
 			this.forceOnBall.clone().multiplyScalar(1 / this.mass)
 		);
@@ -169,10 +191,24 @@ class Ball extends THREE.Mesh {
 	goBack(deltaT?: number): void {
 		// add displacement due to velocity
 
+		// this.position.set(
+		// 	this.previousPosition.x,
+		// 	this.previousPosition.y,
+		// 	this.previousPosition.z
+		// );
 		const dt = deltaT || this.lastDeltaT;
 		this.position.add(this.velocity.clone().multiplyScalar(-2 * dt));
 		// add displacement due to acceleration
 		this.position.add(this.acceleration.clone().multiplyScalar(0.5 * dt * dt));
+		
+		
+		
+		// const dt = deltaT || this.lastDeltaT;
+		// this.position.add(this.previousVelocity.clone().multiplyScalar(-2 * dt));
+		// // add displacement due to acceleration
+		// this.position.add(
+		// 	this.previousAcceleration.clone().multiplyScalar(0.5 * dt * dt)
+		// );
 	}
 
 	applyFriction(): void {
