@@ -5,7 +5,7 @@ class SceneManager {
         this.u = 0;
         this.scene = scene;
         this.createTable(scene, new THREE.Vector3(0, -0.1, 0));
-        this.addBall("ball0", scene, new THREE.Vector3(0, 0, 0), new THREE.Vector3(4, 0, 0));
+        this.addBall("ball0", scene, new THREE.Vector3(0, 0, 0), new THREE.Vector3(6, 0, 0));
         this.addBall("ball1", scene, new THREE.Vector3(Table.TABLE_WIDTH / 4, 0, 0), new THREE.Vector3(0, 0, 0));
         this.addBall("ball2", scene, new THREE.Vector3(Table.TABLE_WIDTH / 4 + Ball.BALL_RADIUS * 1.414, 0, Ball.BALL_RADIUS * 1.414), new THREE.Vector3(0, 0, 0));
         this.addBall("ball3", scene, new THREE.Vector3(Table.TABLE_WIDTH / 4 + Ball.BALL_RADIUS * 1.414, 0, -Ball.BALL_RADIUS * 1.414), new THREE.Vector3(0, 0, 0));
@@ -42,7 +42,8 @@ class SceneManager {
                 const ball2BB = this.balls[j].geometry.boundingSphere.clone();
                 let ball1BBWorld = ball1BB.applyMatrix4(ball1.matrixWorld);
                 let ball2BBWorld = ball2BB.applyMatrix4(ball2.matrixWorld);
-                if (ball1BBWorld.intersectsSphere(ball2BBWorld)) {
+                const dist = ball1.position.clone().sub(ball2.position).length();
+                if (dist < 2 * Ball.BALL_RADIUS) {
                     const ball1Vel = ball1.getVelocity().clone();
                     const ball2Vel = ball2.getVelocity().clone();
                     const ball1Mass = ball1.getMass();
@@ -74,15 +75,15 @@ class SceneManager {
                         .normalize()
                         .setLength(magImpulseOnNormal);
                     const distB1B2 = ball1.position.clone().sub(ball2.position).length();
-                    const moveDist = (2 * Ball.BALL_RADIUS - distB1B2);
+                    const moveDist = 2 * Ball.BALL_RADIUS - distB1B2;
                     const B1ToB2 = ball2.position.clone().sub(ball1.position).normalize();
                     const B2ToB1 = ball1.position.clone().sub(ball2.position).normalize();
                     const ball1Pos = ball1.position
                         .clone()
-                        .add(B2ToB1.setLength(moveDist));
+                        .add(B2ToB1.setLength(moveDist / 2));
                     const ball2Pos = ball2.position
                         .clone()
-                        .add(B1ToB2.setLength(moveDist));
+                        .add(B1ToB2.setLength(moveDist / 2));
                     ball1.setPosition(ball1Pos);
                     ball2.setPosition(ball2Pos);
                     ball1.applyImpulse(impulseOnB1);

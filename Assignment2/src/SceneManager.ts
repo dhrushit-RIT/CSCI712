@@ -30,7 +30,7 @@ class SceneManager {
 			"ball0",
 			scene,
 			new THREE.Vector3(0, 0, 0),
-			new THREE.Vector3(4, 0, 0)
+			new THREE.Vector3(6, 0, 0)
 		);
 		this.addBall(
 			"ball1",
@@ -106,7 +106,10 @@ class SceneManager {
 				let ball1BBWorld = ball1BB.applyMatrix4(ball1.matrixWorld);
 				let ball2BBWorld = ball2BB.applyMatrix4(ball2.matrixWorld);
 				// if (ball1BBWorld.intersectsBox(ball2BBWorld)) {
-				if (ball1BBWorld.intersectsSphere(ball2BBWorld)) {
+				// Use the ball dist for intersection
+				const dist = ball1.position.clone().sub(ball2.position).length();
+				if (dist < 2 * Ball.BALL_RADIUS) {
+					// if (ball1BBWorld.intersectsSphere(ball2BBWorld)) {
 					// SceneManager.collisionTracker[ball1.getBallName()].add(ball2);
 					// SceneManager.collisionTracker[ball2.getBallName()].add(ball1);
 					// calculate the impulse forces on each ball
@@ -152,16 +155,16 @@ class SceneManager {
 
 					// while (ball1BBWorld.intersectsBox(ball2BBWorld)) {
 					const distB1B2 = ball1.position.clone().sub(ball2.position).length();
-					const moveDist = (2 * Ball.BALL_RADIUS - distB1B2);
+					const moveDist = 2 * Ball.BALL_RADIUS - distB1B2;
 
 					const B1ToB2 = ball2.position.clone().sub(ball1.position).normalize();
 					const B2ToB1 = ball1.position.clone().sub(ball2.position).normalize();
 					const ball1Pos = ball1.position
 						.clone()
-						.add(B2ToB1.setLength(moveDist));
+						.add(B2ToB1.setLength(moveDist / 2));
 					const ball2Pos = ball2.position
 						.clone()
-						.add(B1ToB2.setLength(moveDist));
+						.add(B1ToB2.setLength(moveDist / 2));
 					ball1.setPosition(ball1Pos);
 					ball2.setPosition(ball2Pos);
 
