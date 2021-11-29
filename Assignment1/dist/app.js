@@ -76,6 +76,7 @@ let keyFrameString = [
     "7.0  25.0 12.0 12.0 1.0 0.0 0.0 0.0",
     "8.0  25.0 0.0 18.0 1.0 0.0 0.0 0.0",
     "9.0  25.0 1.0 18.0 1.0 0.0 0.0 0.0",
+    "10.0  0.0 0.0 0.0 1.0 1.0 -1.0 0.0",
 ].join("\n");
 let keyFrames = parseKFString(keyFrameString);
 let kfAnim_linear = new KFAnimator(keyFrameString);

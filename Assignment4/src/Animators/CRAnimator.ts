@@ -30,7 +30,7 @@ class CRAnimator extends KFAnimator {
 	}
 
 	private computeStartFrame() {
-		// return this.keyframes[this.keyframes.length - 1];
+		// return this.keyframes[this.keyframes.length-1];
 		return new MyKeyframe(
 			-this.keyframes[1].time,
 			Position.add(this.keyframes[0].pos, Position.difference(this.keyframes[1].pos, this.keyframes[0].pos)),
