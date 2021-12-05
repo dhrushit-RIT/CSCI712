@@ -2,6 +2,7 @@ const scene = new THREE.Scene();
 const cnv = document.getElementById("c");
 const side = window.innerWidth;
 const renderer = new THREE.WebGLRenderer({ canvas: cnv });
+var handle;
 const fileInput = document.getElementById("formFile");
 fileInput.addEventListener("change", handleFiles, false);
 let fieldOfView = 45, aspectRatio = 4 / 3, near = 0.1, far = 1000;
@@ -53,6 +54,10 @@ function parseFileContent(inputText) {
     let [header, motionData] = inputText.split("MOTION");
     skeletonStructure = parseStructure(header);
     threeSkeleton = skeletonStructure["threeRoot"];
+    scene.clear();
+    if (handle)
+        cancelAnimationFrame(handle);
+    frameIndex = 0;
     scene.add(threeSkeleton);
     console.log(threeSkeleton);
     motionDataInfo = parseFrames(motionData);
@@ -64,7 +69,7 @@ function afterFileLoads(fileContentText) {
 let endTimeFactor = 1;
 var frameIndex = 0;
 function animate() {
-    let handle = requestAnimationFrame(animate);
+    handle = requestAnimationFrame(animate);
     frameIndex += 1;
     frameIndex %= motionDataInfo.numframes;
     const skeletonInfo = motionDataInfo.frames[frameIndex];
