@@ -1,0 +1,18 @@
+{
+  "name": "assignment3",
+  "version": "1.0.0",
+  "description": "implement billiard ball simulation to understand effect of force on objects",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc --build",
+    "clean": "tsc --build --clean"
+  },
+  "author": "Dhrushit Raval and Vama Shah",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {
+    "@types/three": "^0.133.1",
+    "typescript": "^4.4.4"
+  }
+}
