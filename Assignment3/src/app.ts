@@ -26,7 +26,7 @@ const material = new THREE.MeshBasicMaterial({
 const sceneManager = new SceneManager(scene);
 
 // set up camera
-camera.position.set(200, 200, 200);
+camera.position.set(300, 300, 300);
 camera.lookAt(0, 100, 0);
 
 scene.add(camera);
@@ -88,6 +88,15 @@ var skeletonStructure: {
 	partsSequenceForOffset: string[];
 	threeRoot: Joint;
 };
+
+function addPlatform() {
+	const geometry = new THREE.BoxGeometry(500, 0.5, 500);
+	const material = new THREE.MeshBasicMaterial({ color: 0x8800ff });
+	const cube = new THREE.Mesh(geometry, material);
+
+	scene.add(cube);
+}
+
 function parseFileContent(inputText: string) {
 	let [header, motionData] = inputText.split("MOTION");
 	skeletonStructure = parseStructure(header);
@@ -99,7 +108,7 @@ function parseFileContent(inputText: string) {
 	console.log(threeSkeleton);
 
 	motionDataInfo = parseFrames(motionData);
-
+	addPlatform();
 	animate();
 
 	// let parts = inputText.split("\n");

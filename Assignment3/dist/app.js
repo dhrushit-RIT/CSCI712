@@ -12,7 +12,7 @@ const material = new THREE.MeshBasicMaterial({
     vertexColors: false,
 });
 const sceneManager = new SceneManager(scene);
-camera.position.set(200, 200, 200);
+camera.position.set(300, 300, 300);
 camera.lookAt(0, 100, 0);
 scene.add(camera);
 const clock = new THREE.Clock();
@@ -50,6 +50,12 @@ function parseFrames(motionData) {
 }
 var motionDataInfo;
 var skeletonStructure;
+function addPlatform() {
+    const geometry = new THREE.BoxGeometry(500, 0.5, 500);
+    const material = new THREE.MeshBasicMaterial({ color: 0x8800ff });
+    const cube = new THREE.Mesh(geometry, material);
+    scene.add(cube);
+}
 function parseFileContent(inputText) {
     let [header, motionData] = inputText.split("MOTION");
     skeletonStructure = parseStructure(header);
@@ -61,6 +67,7 @@ function parseFileContent(inputText) {
     scene.add(threeSkeleton);
     console.log(threeSkeleton);
     motionDataInfo = parseFrames(motionData);
+    addPlatform();
     animate();
 }
 function afterFileLoads(fileContentText) {
