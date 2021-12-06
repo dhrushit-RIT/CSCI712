@@ -11,10 +11,10 @@ var fileInputElem = document.getElementById("formFile");
 fileInputElem.addEventListener("change", handleFiles, false);
 
 // set up camera
-let fieldOfView = 60,
-	aspectRatio = 4 / 3,
-	nearVal = 0.1,
-	far = 1000;
+// let fieldOfView = 60,
+// 	aspectRatio = 4 / 3,
+// 	nearVal = 0.1,
+// 	far = 1000;
 
 var camera = new THREE.PerspectiveCamera(60, 1, 0.1, 1000);
 document.body.appendChild(renderer.domElement);
