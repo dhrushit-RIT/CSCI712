@@ -1,23 +1,20 @@
-const scene = new THREE.Scene();
-const cnv = document.getElementById("c");
-const side = window.innerWidth;
-const renderer = new THREE.WebGLRenderer({ canvas: cnv });
+var scene = new THREE.Scene();
+var mycnv = document.getElementById("c");
+var side = window.innerWidth;
+var renderer = new THREE.WebGLRenderer({ canvas: mycnv });
 var handle;
-const fileInput = document.getElementById("formFile");
-fileInput.addEventListener("change", handleFiles, false);
-let fieldOfView = 45, aspectRatio = 4 / 3, near = 0.1, far = 1000;
-const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 1000);
+var fileInputElem = document.getElementById("formFile");
+fileInputElem.addEventListener("change", handleFiles, false);
+let fieldOfView = 60, aspectRatio = 4 / 3, nearVal = 0.1, far = 1000;
+var camera = new THREE.PerspectiveCamera(60, 1, 0.1, 1000);
 document.body.appendChild(renderer.domElement);
-const material = new THREE.MeshBasicMaterial({
+var material = new THREE.MeshBasicMaterial({
     vertexColors: false,
 });
-const sceneManager = new SceneManager(scene);
 camera.position.set(300, 300, 300);
 camera.lookAt(0, 100, 0);
 scene.add(camera);
-const clock = new THREE.Clock();
-const axesHelper = new THREE.AxesHelper(2);
-scene.add(axesHelper);
+var myclock = new THREE.Clock();
 var threeSkeleton = null;
 function makeSkeleton(skeletonStructure) {
     console.log({ skeletonStructure });
@@ -68,17 +65,27 @@ function parseFileContent(inputText) {
     console.log(threeSkeleton);
     motionDataInfo = parseFrames(motionData);
     addPlatform();
+    const slider = document.getElementById("customRange3");
+    slider.max = motionDataInfo.numframes;
     animate();
 }
 function afterFileLoads(fileContentText) {
     parseFileContent(fileContentText);
 }
-let endTimeFactor = 1;
+function onSliderChanged() {
+    const slider = document.getElementById("customRange3");
+    frameIndex = parseInt(slider.value);
+}
+var slider = document.getElementById("customRange3");
+console.log(slider);
+slider.addEventListener("input", onSliderChanged);
+var endTimeFactor = 1;
 var frameIndex = 0;
 function animate() {
     handle = requestAnimationFrame(animate);
     frameIndex += 1;
     frameIndex %= motionDataInfo.numframes;
+    slider.value = frameIndex;
     const skeletonInfo = motionDataInfo.frames[frameIndex];
     for (let part in skeletonInfo) {
         skeletonStructure.threeSkeletonParts[part].setFromFrameInfo(skeletonInfo[part]);

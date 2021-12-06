@@ -1,29 +1,29 @@
 // init scene
-const scene = new THREE.Scene();
-const cnv = document.getElementById("c");
+var scene = new THREE.Scene();
+var mycnv = document.getElementById("c");
 // init renderer
-const side = window.innerWidth;
-const renderer = new THREE.WebGLRenderer({ canvas: cnv });
+var side = window.innerWidth;
+var renderer = new THREE.WebGLRenderer({ canvas: mycnv });
 // renderer.setSize(side, side);
 var handle: any;
 // handling files
-const fileInput = document.getElementById("formFile");
-fileInput.addEventListener("change", handleFiles, false);
+var fileInputElem = document.getElementById("formFile");
+fileInputElem.addEventListener("change", handleFiles, false);
 
 // set up camera
-let fieldOfView = 45,
+let fieldOfView = 60,
 	aspectRatio = 4 / 3,
-	near = 0.1,
+	nearVal = 0.1,
 	far = 1000;
 
-const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 1000);
+var camera = new THREE.PerspectiveCamera(60, 1, 0.1, 1000);
 document.body.appendChild(renderer.domElement);
 
-const material = new THREE.MeshBasicMaterial({
+var material = new THREE.MeshBasicMaterial({
 	vertexColors: false,
 });
 
-const sceneManager = new SceneManager(scene);
+// const sceneManager = new SceneManager(scene);
 
 // set up camera
 camera.position.set(300, 300, 300);
@@ -31,10 +31,10 @@ camera.lookAt(0, 100, 0);
 
 scene.add(camera);
 
-const clock = new THREE.Clock();
+var myclock = new THREE.Clock();
 
-const axesHelper = new THREE.AxesHelper(2);
-scene.add(axesHelper);
+// const myAxesHelper = new THREE.AxesHelper(2);
+// scene.add(myAxesHelper);
 
 var threeSkeleton: Joint = null;
 
@@ -109,6 +109,15 @@ function parseFileContent(inputText: string) {
 
 	motionDataInfo = parseFrames(motionData);
 	addPlatform();
+	const slider = document.getElementById("customRange3");
+	(slider as any).max = motionDataInfo.numframes;
+	// (slider as any).addEventListener("drag", () =>
+	// 	console.log((slider as any).value)
+	// );
+	// (slider as any).addEventListener("cuechange", () =>
+	// 	console.log((slider as any).value)
+	// );
+
 	animate();
 
 	// let parts = inputText.split("\n");
@@ -122,17 +131,32 @@ function afterFileLoads(fileContentText: string) {
 	parseFileContent(fileContentText);
 }
 
+function onSliderChanged() {
+	const slider = document.getElementById("customRange3");
+	frameIndex = parseInt((slider as any).value);
+}
+
+var slider = document.getElementById("customRange3");
+console.log(slider);
+
+// slider.addEventListener("change", onSliderChanged);
+slider.addEventListener(
+	"input",
+	onSliderChanged /* () => console.log((slider as any).value) */
+);
+
 //
 // render
 //
 // const canvas = renderer.domElement;
-let endTimeFactor = 1;
+var endTimeFactor = 1;
 var frameIndex = 0;
 function animate() {
 	handle = requestAnimationFrame(animate);
 	// sceneManager.myUpdate(clock.getElapsedTime());
 	frameIndex += 1;
 	frameIndex %= motionDataInfo.numframes;
+	(slider as any).value = frameIndex;
 	const skeletonInfo: any = motionDataInfo.frames[frameIndex];
 	for (let part in skeletonInfo) {
 		skeletonStructure.threeSkeletonParts[part].setFromFrameInfo(
