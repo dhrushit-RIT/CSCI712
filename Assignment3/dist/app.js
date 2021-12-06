@@ -75,20 +75,31 @@ function onSliderChanged() {
     const slider = document.getElementById("customRange3");
     frameIndex = parseInt(slider.value);
 }
-var slider = document.getElementById("customRange3");
-console.log(slider);
-slider.addEventListener("input", onSliderChanged);
+var frameIndexSlider = document.getElementById("customRange3");
+console.log(frameIndexSlider);
+frameIndexSlider.addEventListener("input", onSliderChanged);
+function onFrameRateChange() {
+    frameRate = parseInt(speedSlider.value);
+    console.log(frameRate);
+}
+var speedSlider = document.getElementById("frameRateRange");
+speedSlider.value = 60;
+speedSlider.addEventListener("input", onFrameRateChange);
+var frameRate = 60;
+var timeScale = 1;
 var endTimeFactor = 1;
 var frameIndex = 0;
 function animate() {
-    handle = requestAnimationFrame(animate);
-    frameIndex += 1;
-    frameIndex %= motionDataInfo.numframes;
-    slider.value = frameIndex;
-    const skeletonInfo = motionDataInfo.frames[frameIndex];
-    for (let part in skeletonInfo) {
-        skeletonStructure.threeSkeletonParts[part].setFromFrameInfo(skeletonInfo[part]);
-    }
+    setTimeout(function () {
+        handle = requestAnimationFrame(animate);
+        frameIndex += 1;
+        frameIndex %= motionDataInfo.numframes;
+        frameIndexSlider.value = frameIndex;
+        const skeletonInfo = motionDataInfo.frames[frameIndex];
+        for (let part in skeletonInfo) {
+            skeletonStructure.threeSkeletonParts[part].setFromFrameInfo(skeletonInfo[part]);
+        }
+    }, 1000 / frameRate);
     renderer.render(scene, camera);
 }
 //# sourceMappingURL=app.js.map

@@ -136,15 +136,24 @@ function onSliderChanged() {
 	frameIndex = parseInt((slider as any).value);
 }
 
-var slider = document.getElementById("customRange3");
-console.log(slider);
+var frameIndexSlider = document.getElementById("customRange3");
+console.log(frameIndexSlider);
 
 // slider.addEventListener("change", onSliderChanged);
-slider.addEventListener(
+frameIndexSlider.addEventListener(
 	"input",
 	onSliderChanged /* () => console.log((slider as any).value) */
 );
 
+function onFrameRateChange() {
+	frameRate = parseInt((speedSlider as any).value);
+	console.log(frameRate);
+}
+var speedSlider = document.getElementById("frameRateRange");
+(speedSlider as any).value = 60;
+speedSlider.addEventListener("input", onFrameRateChange);
+var frameRate = 60;
+var timeScale = 1;
 //
 // render
 //
@@ -152,18 +161,33 @@ slider.addEventListener(
 var endTimeFactor = 1;
 var frameIndex = 0;
 function animate() {
-	handle = requestAnimationFrame(animate);
-	// sceneManager.myUpdate(clock.getElapsedTime());
-	frameIndex += 1;
-	frameIndex %= motionDataInfo.numframes;
-	(slider as any).value = frameIndex;
-	const skeletonInfo: any = motionDataInfo.frames[frameIndex];
-	for (let part in skeletonInfo) {
-		skeletonStructure.threeSkeletonParts[part].setFromFrameInfo(
-			skeletonInfo[part]
-		);
-	}
+	setTimeout(function () {
+		handle = requestAnimationFrame(animate);
+		// sceneManager.myUpdate(clock.getElapsedTime());
+		frameIndex += 1;
+		frameIndex %= motionDataInfo.numframes;
+		(frameIndexSlider as any).value = frameIndex;
+		const skeletonInfo: any = motionDataInfo.frames[frameIndex];
+		for (let part in skeletonInfo) {
+			skeletonStructure.threeSkeletonParts[part].setFromFrameInfo(
+				skeletonInfo[part]
+			);
+		}
+	}, 1000 / frameRate);
+
 	renderer.render(scene, camera);
 }
+
+// function animate() {
+
+//     setTimeout( function() {
+
+//         requestAnimationFrame( animate );
+
+//     }, 1000 / 30 );
+
+//     renderer.render();
+
+// }
 
 // animate();
