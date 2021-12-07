@@ -13,6 +13,16 @@ class SceneManager {
             SceneManager.collisionTracker[ball.getBallName()] = new Set();
         }
     }
+    resetSceneAndRun() {
+        this.balls[0].setPosition(new THREE.Vector3(0, 0, 0));
+        this.balls[1].setPosition(new THREE.Vector3(Table.TABLE_WIDTH / 4, 0, 0));
+        this.balls[2].setPosition(new THREE.Vector3(Table.TABLE_WIDTH / 4 + Ball.BALL_RADIUS * 1.414, 0, Ball.BALL_RADIUS * 1.414));
+        this.balls[3].setPosition(new THREE.Vector3(Table.TABLE_WIDTH / 4 + Ball.BALL_RADIUS * 1.414, 0, -Ball.BALL_RADIUS * 1.414));
+        this.balls[0].setVelocity(new THREE.Vector3(6, 0, 0));
+        this.balls[1].setVelocity(new THREE.Vector3(0, 0, 0));
+        this.balls[2].setVelocity(new THREE.Vector3(0, 0, 0));
+        this.balls[3].setVelocity(new THREE.Vector3(0, 0, 0));
+    }
     addBall(name, scene, initPos, initVel) {
         const ball = new Ball(name);
         ball.position.set(initPos.x, initPos.y, initPos.z);
