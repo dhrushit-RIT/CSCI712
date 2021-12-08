@@ -25,6 +25,12 @@ function onFrictionChange() {
 	);
 }
 
+function onCoEffRestChange() {
+	SceneManager.ELASTICITY_BALL_CUSHION = parseFloat(
+		(coeffRestSlider as any).value
+	);
+}
+
 const sceneManager = new SceneManager(scene);
 var frictionCoeffSlider = document.getElementById("frictionRange");
 frictionCoeffSlider.addEventListener(
@@ -32,8 +38,15 @@ frictionCoeffSlider.addEventListener(
 	onFrictionChange /* () => console.log((slider as any).value) */
 );
 
-(frictionCoeffSlider as any).value = SceneManager.COEFF_FRIC_BALL_SURFACE;
+var coeffRestSlider = document.getElementById("coeff-rest");
+coeffRestSlider.addEventListener(
+	"input",
+	onCoEffRestChange /* () => console.log((slider as any).value) */
+);
 
+(frictionCoeffSlider as any).value = SceneManager.COEFF_FRIC_BALL_SURFACE;
+(coeffRestSlider as any).value = SceneManager.ELASTICITY_BALL_CUSHION;
+// ELASTICITY_BALL_CUSHION
 // set up camera
 camera.position.set(7, 7, 7);
 camera.lookAt(0, 0, 0);

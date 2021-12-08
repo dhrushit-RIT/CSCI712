@@ -11,10 +11,16 @@ const material = new THREE.MeshBasicMaterial({
 function onFrictionChange() {
     SceneManager.COEFF_FRIC_BALL_SURFACE = parseFloat(frictionCoeffSlider.value);
 }
+function onCoEffRestChange() {
+    SceneManager.ELASTICITY_BALL_CUSHION = parseFloat(coeffRestSlider.value);
+}
 const sceneManager = new SceneManager(scene);
 var frictionCoeffSlider = document.getElementById("frictionRange");
 frictionCoeffSlider.addEventListener("input", onFrictionChange);
+var coeffRestSlider = document.getElementById("coeff-rest");
+coeffRestSlider.addEventListener("input", onCoEffRestChange);
 frictionCoeffSlider.value = SceneManager.COEFF_FRIC_BALL_SURFACE;
+coeffRestSlider.value = SceneManager.ELASTICITY_BALL_CUSHION;
 camera.position.set(7, 7, 7);
 camera.lookAt(0, 0, 0);
 scene.add(camera);
