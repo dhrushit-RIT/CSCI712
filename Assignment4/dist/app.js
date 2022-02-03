@@ -4,8 +4,9 @@ const side = window.innerWidth;
 const renderer = new THREE.WebGLRenderer({ canvas: cnv });
 let fieldOfView = 45, aspectRatio = 4 / 3, near = 0.1, far = 1000;
 const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 1000);
-document.body.appendChild(renderer.domElement);
-camera.position.set(10, 10, -20);
+const canvas_container = document.getElementById("canvas_container");
+canvas_container.appendChild(renderer.domElement);
+camera.position.set(5, 5, -2);
 camera.lookAt(10, 10, 0);
 scene.add(camera);
 const clock = new THREE.Clock();
@@ -55,9 +56,8 @@ const particleSystem = new ParticleSystem(numParticles, maxParticles, emmissionR
 }, genSide);
 let keyFrameString = [
     "0.0  0.0 0.0 0.0 1.0 1.0 -1.0 0.0",
-    "3.0  12.0 12.0 12.0 1.0 1.0 -1.0 180.0",
-    "6.0  18.0 0.0 0.0 0.0 0.0 1.0 180.0",
-    "9.0  0.0 0.0 0.0 1.0 1.0 -1.0 0.0",
+    "3.0  1.0 1.0 1.0 1.0 1.0 -1.0 180.0",
+    "6.0  12.0 0.0 0.0 0.0 0.0 1.0 180.0",
 ].join("\n");
 let keyFrames = parseKFString(keyFrameString);
 let kfAnim_catmull = new CRAnimator(keyFrameString);
