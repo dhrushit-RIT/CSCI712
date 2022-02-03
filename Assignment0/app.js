@@ -1,11 +1,12 @@
 const scene = new THREE.Scene();
-
+const canvas = document.getElementById("cnv");
 const camera = new THREE.OrthographicCamera(-50, 50, 50, -50, 0.1, 100);
 // scene.add(camera);
 const renderer = new THREE.WebGLRenderer();
-const side = Math.min(window.innerWidth, window.innerHeight);
+canvas.appendChild( renderer.domElement );
+const side = Math.min(window.innerWidth/2, window.innerHeight/2);
 renderer.setSize(side, side);
-document.body.appendChild(renderer.domElement);
+// document.body.appendChild(renderer.domElement);
 
 //
 // add cube to the scene
