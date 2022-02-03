@@ -131,7 +131,7 @@ class ParticleSystem extends THREE.Group {
 
 	reallocateUnusedParticles() {
 		let numParticlesCreated = 0;
-		console.log(" pool particles: " + this.reusePool.length);
+		// console.log(" pool particles: " + this.reusePool.length);
 		while (
 			this.reusePool.length > 0 &&
 			numParticlesCreated < this.numParticlesAtATime
@@ -157,15 +157,15 @@ class ParticleSystem extends THREE.Group {
 		}
 
 		if (this.emmissionElapsedTime > this.emmissionRate) {
-			console.log(
-				"creating " +
-					(this.numParticlesAtATime - numParticlesCreated) +
-					" new particles " +
-					" total particles : " +
-					this.particles.length +
-					" pool particles: " +
-					this.reusePool.length
-			);
+			// console.log(
+			// 	"creating " +
+			// 		(this.numParticlesAtATime - numParticlesCreated) +
+			// 		" new particles " +
+			// 		" total particles : " +
+			// 		this.particles.length +
+			// 		" pool particles: " +
+			// 		this.reusePool.length
+			// );
 			this.emmissionElapsedTime = 0;
 			if (
 				numParticlesCreated < this.numParticlesAtATime &&
