@@ -17,7 +17,9 @@ fileInputElem.addEventListener("change", handleFiles, false);
 // 	far = 1000;
 
 var camera = new THREE.PerspectiveCamera(60, 1, 0.1, 1000);
-document.body.appendChild(renderer.domElement);
+const canvas_container = document.getElementById("canvas_container");
+
+canvas_container.appendChild(renderer.domElement);
 
 var material = new THREE.MeshBasicMaterial({
 	vertexColors: false,
