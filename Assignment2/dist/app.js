@@ -1,10 +1,11 @@
 const scene = new THREE.Scene();
 const cnv = document.getElementById("c");
+const canvas_container = document.getElementById("canvas_container");
 const side = window.innerWidth;
 const renderer = new THREE.WebGLRenderer({ canvas: cnv });
 let fieldOfView = 45, aspectRatio = 4 / 3, near = 0.1, far = 1000;
 const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 1000);
-document.body.appendChild(renderer.domElement);
+canvas_container.appendChild(renderer.domElement);
 const material = new THREE.MeshBasicMaterial({
     vertexColors: false,
 });
