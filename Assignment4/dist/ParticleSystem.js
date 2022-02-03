@@ -70,7 +70,6 @@ class ParticleSystem extends THREE.Group {
     }
     reallocateUnusedParticles() {
         let numParticlesCreated = 0;
-        console.log(" pool particles: " + this.reusePool.length);
         while (this.reusePool.length > 0 &&
             numParticlesCreated < this.numParticlesAtATime) {
             const randPos = this.getRandomPosition();
@@ -79,13 +78,6 @@ class ParticleSystem extends THREE.Group {
             particle.init(randPos, this.particleFeatures.size, this.particleFeatures.color, this.getVec3InRange(this.particleFeatures.velocity, this.velocity), this.getAcceleration(this.particleFeatures.acceleration, this.acceleration, randPos), this.particleFeatures.alfa, this.particleFeatures.deltaAlfa, this.particleFeatures.mass, this.particleFeatures.lifeTime);
         }
         if (this.emmissionElapsedTime > this.emmissionRate) {
-            console.log("creating " +
-                (this.numParticlesAtATime - numParticlesCreated) +
-                " new particles " +
-                " total particles : " +
-                this.particles.length +
-                " pool particles: " +
-                this.reusePool.length);
             this.emmissionElapsedTime = 0;
             if (numParticlesCreated < this.numParticlesAtATime &&
                 this.particles.length < this.maxParticles) {
