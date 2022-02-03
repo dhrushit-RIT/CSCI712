@@ -19,8 +19,8 @@ canvas_container.appendChild(renderer.domElement);
 // const sceneManager = new SceneManager(scene);
 
 // set up camera
-camera.position.set(5, 5, -2);
-camera.lookAt(10, 10, 0);
+camera.position.set(10, 10, -5);
+camera.lookAt(5, 5, 0);
 
 scene.add(camera);
 
